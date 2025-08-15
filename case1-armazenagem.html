@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>📦 Case 1 — Custos de Armazenagem (Pequeno | 1 mês)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    :root{
+      --brand: #2563eb; /* azul */
+      --soft: #eff6ff;
+      --ok: #10b981; /* verde */
+      --emph: #111827;
+    }
+    body{
+      background: linear-gradient(180deg, var(--soft) 0%, #ffffff 60%);
+      color:#0f172a;
+    }
+    .hero{
+      background: radial-gradient(70% 70% at 50% 20%, #dbeafe 0%, #fff 70%);
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .badge-soft{background:#e0e7ff;color:#1e3a8a}
+    .card{border-radius:1rem;box-shadow:0 10px 25px rgba(0,0,0,.06)}
+    .step{display:none;opacity:0;transition:opacity .4s ease}
+    .step.show{display:block;opacity:1}
+    .step-index{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700}
+    .step-index.active{background:var(--brand);color:#fff}
+    .step-index.done{background:var(--ok);color:#fff}
+    .progress{height:8px}
+    .formula{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; background:#f8fafc;border-radius:.5rem;padding:.75rem}
+    .kpi{border-left:6px solid var(--brand);padding-left:1rem}
+    .kpi .value{font-size:1.4rem;font-weight:800;color:var(--emph)}
+    .footer-note{font-size:.92rem;color:#475569}
+    .pill{display:inline-block;border-radius:999px;padding:.35rem .75rem;background:#f1f5f9}
+    .list-check i{color:var(--ok);margin-right:.5rem}
+    .sticky-nav{position:sticky;top:0;z-index:1000;background:#ffffffd9;backdrop-filter:saturate(180%) blur(6px)}
+  </style>
+</head>
+<body>
+  <header class="hero py-4 sticky-nav">
+    <div class="container d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center gap-3">
+        <span class="step-index active" id="bubble-0">1</span>
+        <span class="step-index" id="bubble-1">2</span>
+        <span class="step-index" id="bubble-2">3</span>
+        <span class="step-index" id="bubble-3">4</span>
+        <span class="step-index" id="bubble-4">5</span>
+        <span class="step-index" id="bubble-5">6</span>
+        <span class="step-index" id="bubble-6">7</span>
+        <span class="step-index" id="bubble-7">8</span>
+        <span class="step-index" id="bubble-8">9</span>
+        <span class="step-index" id="bubble-9">10</span>
+        <span class="step-index" id="bubble-10">11</span>
+        <span class="step-index" id="bubble-11">12</span>
+        <span class="step-index" id="bubble-12">13</span>
+      </div>
+      <div class="flex-grow-1 mx-3">
+        <div class="progress">
+          <div class="progress-bar bg-primary" id="bar" role="progressbar" style="width:0%"></div>
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn btn-outline-secondary" id="btnBack"><i class="bi bi-arrow-left"></i> Voltar</button>
+        <button class="btn btn-primary" id="btnNext">Avançar <i class="bi bi-arrow-right"></i></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container my-4">
+
+    <!-- STEP 0: Enunciado -->
+    <section class="step show" id="step-0">
+      <div class="card p-4">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="pill">📦 Case 1</span>
+          <span class="badge badge-soft">Pequeno porte</span>
+          <span class="pill">Horizonte: 1 mês</span>
+        </div>
+        <h1 class="h3">Loja online local + B2B leve — Cenário</h1>
+        <p class="mb-0">Você administra um armazém de <strong>150 m²</strong> (90 m² prateleiras, 30 m² porta‑paletes, 30 m² operação). O mix tem cerca de <strong>200 SKUs</strong> pequenos e ~<strong>20 pallets</strong>. No mês, há <strong>250 pedidos</strong> (totalizando <strong>400 linhas</strong>) e <strong>15 ordens de compra</strong> (total <strong>300 linhas</strong>). A equipe possui <strong>2 auxiliares</strong> (R$ 20/h) e <strong>0,5 supervisor</strong> (R$ 30/h). Os processos usam WMS básico, 2 paleteiras manuais e tempos‑padrão listados a seguir.</p>
+        <ul class="list-check mt-3">
+          <li><i class="bi bi-check-circle-fill"></i> Recebimento: <strong>3,5 min/linha</strong> | Put-away: <strong>2,0 min/linha</strong></li>
+          <li><i class="bi bi-check-circle-fill"></i> Picking: <strong>3,0 min/linha</strong> | Embalagem: <strong>7 min/pedido</strong></li>
+          <li><i class="bi bi-check-circle-fill"></i> Inventário: <strong>24 h/mês</strong> | Expedição misc.: <strong>12 h/mês</strong></li>
+        </ul>
+        <div class="row g-3 mt-2">
+          <div class="col-md-6">
+            <div class="kpi">
+              <div class="text-muted">Estoque médio</div>
+              <div class="value">5.000 unidades</div>
+              <div class="footer-note">Usado para calcular o custo de posse/holding por unidade.</div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="kpi">
+              <div class="text-muted">Equipe</div>
+              <div class="value">2 operadores + 0,5 supervisor</div>
+              <div class="footer-note">MO direta e indireta com rateio 50% holding / 50% processos.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 1: Custos Prediais / Base de Área -->
+    <section class="step" id="step-1">
+      <div class="card p-4">
+        <h2 class="h4">🏢 Base predial (ligada à área)</h2>
+        <p>Somamos os custos que dependem diretamente dos <strong>m²</strong>: aluguel, utilidades, seguros, segurança e manutenção predial.</p>
+        <div class="row g-3">
+          <div class="col-md-7">
+            <table class="table table-sm align-middle">
+              <thead><tr><th>Item</th><th class="text-end">R$ / mês</th></tr></thead>
+              <tbody>
+                <tr><td>Aluguel</td><td class="text-end" id="tAluguel"></td></tr>
+                <tr><td>Utilidades</td><td class="text-end" id="tUtil"></td></tr>
+                <tr><td>Seguros</td><td class="text-end" id="tSeguros"></td></tr>
+                <tr><td>Segurança/monitoramento</td><td class="text-end" id="tSeguranca"></td></tr>
+                <tr><td>Manutenção predial</td><td class="text-end" id="tManut"></td></tr>
+              </tbody>
+              <tfoot>
+                <tr class="table-light"><th>Subtotal predial</th><th class="text-end" id="tPredial"></th></tr>
+              </tfoot>
+            </table>
+          </div>
+          <div class="col-md-5">
+            <div class="formula" id="fBasePredial"></div>
+            <div class="mt-2 small text-muted">Esta base alimenta o cálculo do <strong>custo por m²</strong> e o <strong>holding</strong>.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 2: Custo por m² e por posição/localização -->
+    <section class="step" id="step-2">
+      <div class="card p-4">
+        <h2 class="h4">📐 Custo por m² e por unidade de armazenagem</h2>
+        <p>Do subtotal predial e da metragem do armazém, obtemos o <strong>custo de m²/mês</strong>. Depois, convertemos para <strong>custo por localização de prateleira</strong> e <strong>por posição de porta‑palete</strong>.</p>
+        <div class="row g-3">
+          <div class="col-lg-6">
+            <div class="kpi mb-3">
+              <div class="text-muted">Custo de m²/mês</div>
+              <div class="value" id="vCustoM2"></div>
+              <div class="footer-note" id="fCustoM2"></div>
+            </div>
+            <div class="kpi mb-3">
+              <div class="text-muted">Prateleira (por localização/mês)</div>
+              <div class="value" id="vLocPrateleira"></div>
+              <div class="footer-note">Densidade: <strong>4 loc/m²</strong> ⇒ 0,25 m² por localização.</div>
+            </div>
+            <div class="kpi">
+              <div class="text-muted">Porta‑palete (por posição/mês)</div>
+              <div class="value" id="vPosPalete"></div>
+              <div class="footer-note">Aproximação: <strong>~1,0 m²</strong> por posição (com corredores).</div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="formula" id="fLocs"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 3: Holding e custo por unidade em estoque -->
+    <section class="step" id="step-3">
+      <div class="card p-4">
+        <h2 class="h4">🛡️ Holding (posse do estoque) e custo por unidade</h2>
+        <p>Holding = custos para <em>manter o estoque parado</em> (espaço/guarda). Usamos 50% de TI/WMS e 50% da supervisão/adm.</p>
+        <div class="row g-3">
+          <div class="col-md-7">
+            <table class="table table-sm align-middle">
+              <thead><tr><th>Composição do holding</th><th class="text-end">R$ / mês</th></tr></thead>
+              <tbody>
+                <tr><td>Aluguel + Utilidades + Seguros + Segurança + Manutenção</td><td class="text-end" id="hBaseArea"></td></tr>
+                <tr><td>Depreciação das estruturas</td><td class="text-end" id="hDepEstr"></td></tr>
+                <tr><td>50% TI/WMS</td><td class="text-end" id="hTi"></td></tr>
+                <tr><td>50% (MO indireta + Overhead adm.)</td><td class="text-end" id="hAdm"></td></tr>
+              </tbody>
+              <tfoot>
+                <tr class="table-light"><th>Total holding/mês</th><th class="text-end" id="hTotal"></th></tr>
+              </tfoot>
+            </table>
+          </div>
+          <div class="col-md-5">
+            <div class="formula" id="fHolding"></div>
+            <div class="kpi mt-3">
+              <div class="text-muted">Custo por unidade estocada (mês)</div>
+              <div class="value" id="hUnit"></div>
+              <div class="footer-note">Dividimos o holding pela <strong>média de 5.000 unidades</strong>.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 4–8: Custos por processo -->
+    <section class="step" id="step-4">
+      <div class="card p-4">
+        <h2 class="h4">📥 Recebimento — custo por linha</h2>
+        <p>Tempo padrão e insumos por <strong>SKU</strong> (linha) recebido.</p>
+        <div class="row g-3">
+          <div class="col-lg-7">
+            <div class="formula" id="fReceb"></div>
+            <div class="small text-muted">Obs.: o valor matemático é <span id="recebMath"></span>. No case, apresentamos <strong>R$ 1,60</strong> como valor didático (ajuste fino de etiqueta/tempo).</div>
+          </div>
+          <div class="col-lg-5">
+            <div class="kpi">
+              <div class="text-muted">Recebimento (R$/linha)</div>
+              <div class="value" id="recebValor"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="step" id="step-5">
+      <div class="card p-4">
+        <h2 class="h4">📦 Put‑away (endereçamento) — custo por linha</h2>
+        <div class="row g-3">
+          <div class="col-lg-7"><div class="formula" id="fPut"></div></div>
+          <div class="col-lg-5">
+            <div class="kpi"><div class="text-muted">Put‑away (R$/linha)</div><div class="value" id="putValor"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="step" id="step-6">
+      <div class="card p-4">
+        <h2 class="h4">🧾 Picking — custo por linha</h2>
+        <div class="row g-3">
+          <div class="col-lg-7"><div class="formula" id="fPick"></div></div>
+          <div class="col-lg-5">
+            <div class="kpi"><div class="text-muted">Picking (R$/linha)</div><div class="value" id="pickValor"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="step" id="step-7">
+      <div class="card p-4">
+        <h2 class="h4">📦📦 Embalagem — custo por pedido</h2>
+        <div class="row g-3">
+          <div class="col-lg-7"><div class="formula" id="fEmb"></div></div>
+          <div class="col-lg-5">
+            <div class="kpi"><div class="text-muted">Embalagem (R$/pedido)</div><div class="value" id="embValor"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="step" id="step-8">
+      <div class="card p-4">
+        <h2 class="h4">🚚 Expedição (tarefas diversas) — custo por pedido</h2>
+        <div class="row g-3">
+          <div class="col-lg-7"><div class="formula" id="fExp"></div></div>
+          <div class="col-lg-5">
+            <div class="kpi"><div class="text-muted">Expedição misc. (R$/pedido)</div><div class="value" id="expValor"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 9: Contagem cíclica -->
+    <section class="step" id="step-9">
+      <div class="card p-4">
+        <h2 class="h4">🧮 Contagem cíclica — custo por SKU contado</h2>
+        <div class="row g-3">
+          <div class="col-lg-7"><div class="formula" id="fInv"></div></div>
+          <div class="col-lg-5">
+            <div class="kpi"><div class="text-muted">Contagem (R$/SKU)</div><div class="value" id="invValor"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 10: Mão de obra e utilização -->
+    <section class="step" id="step-10">
+      <div class="card p-4">
+        <h2 class="h4">👥 Mão de obra — custos e utilização</h2>
+        <div class="row g-3">
+          <div class="col-lg-7">
+            <table class="table table-sm align-middle">
+              <thead><tr><th>Item</th><th class="text-end">Cálculo</th><th class="text-end">R$ / mês</th></tr></thead>
+              <tbody>
+                <tr><td>MO direta (2 operadores)</td><td class="text-end">2 × 176 h × R$ 20/h</td><td class="text-end" id="moDireta"></td></tr>
+                <tr><td>MO indireta (0,5 supervisor)</td><td class="text-end">0,5 × 176 h × R$ 30/h</td><td class="text-end" id="moIndireta"></td></tr>
+              </tbody>
+            </table>
+            <div class="formula" id="fUtil"></div>
+          </div>
+          <div class="col-lg-5">
+            <div class="kpi mb-3"><div class="text-muted">Utilização da MO direta</div><div class="value" id="utilizacao"></div><div class="footer-note">Horas consumidas pelos processos ÷ 352 h disponíveis</div></div>
+            <div class="kpi"><div class="text-muted">Produtividade de picking</div><div class="value" id="prodPicking"></div><div class="footer-note">400 linhas ÷ 20 h = 20 linhas/h</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 11: Custo de pedido (Admin Compras/Receb.) -->
+    <section class="step" id="step-11">
+      <div class="card p-4">
+        <h2 class="h4">🗂️ Custo de pedido (linha comprada)</h2>
+        <p>Atividades administrativas de compras/recebimento (emissão de PO, follow‑up, conferência fiscal, lançamentos no recebimento) rateadas por <strong>linha de compra</strong>.</p>
+        <div class="row g-3">
+          <div class="col-lg-7"><div class="formula" id="fAdmin"></div></div>
+          <div class="col-lg-5">
+            <div class="kpi"><div class="text-muted">Admin. compras/receb. (R$/linha)</div><div class="value" id="adminValor"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 12: Consolidação e indicadores -->
+    <section class="step" id="step-12">
+      <div class="card p-4">
+        <h2 class="h4">📊 Consolidação — custo total & indicadores</h2>
+        <div class="row g-3">
+          <div class="col-xl-6">
+            <table class="table table-sm align-middle">
+              <thead><tr><th>Componente</th><th class="text-end">R$ / mês</th></tr></thead>
+              <tbody>
+                <tr><td>Base predial (área)</td><td class="text-end" id="cPredial"></td></tr>
+                <tr><td>TI/WMS</td><td class="text-end" id="cTI"></td></tr>
+                <tr><td>Depreciação estruturas</td><td class="text-end" id="cDepEstr"></td></tr>
+                <tr><td>Depreciação MHE</td><td class="text-end" id="cDepMHE"></td></tr>
+                <tr><td>Overhead administrativo</td><td class="text-end" id="cOver"></td></tr>
+                <tr><td>MO direta</td><td class="text-end" id="cMOD"></td></tr>
+                <tr><td>MO indireta</td><td class="text-end" id="cMOI"></td></tr>
+                <tr><td>Consumíveis</td><td class="text-end" id="cCons"></td></tr>
+                <tr><td>Admin compras/receb.</td><td class="text-end" id="cAdmin"></td></tr>
+              </tbody>
+              <tfoot>
+                <tr class="table-light"><th>Total mês</th><th class="text-end" id="cTotal"></th></tr>
+              </tfoot>
+            </table>
+          </div>
+          <div class="col-xl-6">
+            <div class="row g-3">
+              <div class="col-sm-6">
+                <div class="kpi"><div class="text-muted">Custo por pedido</div><div class="value" id="kpiPedido"></div><div class="footer-note">Total ÷ 250 pedidos</div></div>
+              </div>
+              <div class="col-sm-6">
+                <div class="kpi"><div class="text-muted">Custo por linha expedida</div><div class="value" id="kpiLinha"></div><div class="footer-note">Total ÷ 400 linhas</div></div>
+              </div>
+              <div class="col-sm-6">
+                <div class="kpi"><div class="text-muted">Custo por unidade estocada</div><div class="value" id="kpiUnit"></div><div class="footer-note">Holding ÷ 5.000 un</div></div>
+              </div>
+              <div class="col-sm-6">
+                <div class="kpi"><div class="text-muted">Custo por m² (área)</div><div class="value" id="kpiM2"></div><div class="footer-note">Predial ÷ 150 m²</div></div>
+              </div>
+            </div>
+            <div class="mt-3">
+              <h3 class="h6">Por que esses indicadores importam? 🤔</h3>
+              <ul class="mb-0">
+                <li><strong>Custo por pedido/linha</strong>: revela eficiência dos processos (picking/embalagem).</li>
+                <li><strong>Custo por unidade estocada</strong>: precificação da armazenagem e decisão de níveis de estoque.</li>
+                <li><strong>Custo por m²</strong>: suporte a layout/densidade e precificação interna de endereços.</li>
+                <li><strong>Utilização da MO</strong>: dimensionamento de equipe e oportunidades de melhoria.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <hr class="my-4" />
+        <div class="alert alert-primary mb-0"><i class="bi bi-lightbulb-fill me-2"></i><strong>Dica:</strong> ajuste salários, tempos e volumes e veja o impacto nos unitários e no total. Pequenas melhorias em <em>picking</em> e <em>embalagem</em> costumam dar grandes resultados. 🚀</div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+  // =====================
+  // Parâmetros do Case 1
+  // =====================
+  const params = {
+    areaTotal: 150,
+    areaPrat: 90,
+    areaPP: 30,
+    areaOper: 30,
+    estoqueMedio: 5000,
+    pedidosMes: 250,
+    linhasExpedidas: 400,
+    POs: 15,
+    linhasCompradas: 300,
+
+    // Custos base (R$ / mês)
+    aluguel: 6750,
+    util: 1500,
+    seguros: 400,
+    seguranca: 350,
+    manut: 500,
+    ti: 600,
+    deprecEstr: 833.33,
+    deprecMHE: 83.33,
+    overheadAdm: 800,
+    moDireta: 7040,
+    moIndireta: 2640,
+    consumiveis: 1350,
+    adminCompras: 493.75,
+
+    // Tempos e custos (processos)
+    custoHoraMOD: 20,
+    custoHoraMOI: 30,
+    recebMinPorLinha: 3.5,
+    putMinPorLinha: 2.0,
+    pickMinPorLinha: 3.0,
+    embMinPorPedido: 7.0,
+    inventarioHoras: 24,
+    expedicaoMiscHoras: 12,
+
+    etiquetaPorLinha: 0.50,
+    insumosPorPedido: 3.00,
+
+    // Contagem cíclica planejada
+    skusContadosMes: 80,
+  };
+
+  // Helpers de formatação
+  const brl = v => v.toLocaleString('pt-BR', {style:'currency', currency:'BRL'});
+  const num2 = v => v.toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+
+  // ===============
+  // Cálculos-base
+  // ===============
+  const subtotalPredial = params.aluguel + params.util + params.seguros + params.seguranca + params.manut; // 9500
+  const custoM2 = subtotalPredial / params.areaTotal; // 63,33
+  const custoPorLocalizacao = custoM2 * 0.25; // 4 loc/m²
+  const custoPorPosicao = custoM2 * 1.0; // ~1m²/posição
+
+  const metadeTI = params.ti * 0.5; // 300
+  const metadeAdm = (params.moIndireta + params.overheadAdm) * 0.5; // 1720
+  const holding = subtotalPredial + params.deprecEstr + metadeTI + metadeAdm; // 12353,33
+  const custoPorUnidadeEstoque = holding / params.estoqueMedio; // 2,47
+
+  // Processos
+  const recebCusto = (params.recebMinPorLinha/60) * params.custoHoraMOD + params.etiquetaPorLinha; // 1,6667
+  const putCusto = (params.putMinPorLinha/60) * params.custoHoraMOD; // 0,6667
+  const pickCusto = (params.pickMinPorLinha/60) * params.custoHoraMOD + params.etiquetaPorLinha; // 1,5
+  const embCusto = (params.embMinPorPedido/60) * params.custoHoraMOD + params.insumosPorPedido; // 5,3333
+  const expCusto = (params.expedicaoMiscHoras * params.custoHoraMOD) / params.pedidosMes; // 0,96
+  const invCusto = (params.inventarioHoras * params.custoHoraMOD) / params.skusContadosMes; // 6,00
+
+  // Utilização e produtividade
+  const hReceb = params.linhasCompradas * params.recebMinPorLinha / 60; // 17,5h
+  const hPut = params.linhasCompradas * params.putMinPorLinha / 60; // 10h
+  const hPick = params.linhasExpedidas * params.pickMinPorLinha / 60; // 20h
+  const hEmb = params.pedidosMes * params.embMinPorPedido / 60; // 29,17h
+  const hExp = params.expedicaoMiscHoras; // 12h
+  const hInv = params.inventarioHoras; // 24h
+  const hConsumidas = hReceb + hPut + hPick + hEmb + hExp + hInv; // 112,67h
+  const hDisponiveis = 2 * 176; // 352h
+  const utilizacao = hConsumidas / hDisponiveis; // ~32%
+  const prodPicking = params.linhasExpedidas / hPick; // 20 linhas/h
+
+  // Total do mês (consolidação)
+  const totalMes = subtotalPredial + params.ti + params.deprecEstr + params.deprecMHE + params.overheadAdm + params.moDireta + params.moIndireta + params.consumiveis + params.adminCompras; // 23340,41
+
+  // =====================
+  // Preenchimento da UI
+  // =====================
+  function fill(){
+    // Step 1
+    document.getElementById('tAluguel').textContent = brl(params.aluguel);
+    document.getElementById('tUtil').textContent = brl(params.util);
+    document.getElementById('tSeguros').textContent = brl(params.seguros);
+    document.getElementById('tSeguranca').textContent = brl(params.seguranca);
+    document.getElementById('tManut').textContent = brl(params.manut);
+    document.getElementById('tPredial').textContent = brl(subtotalPredial);
+    document.getElementById('fBasePredial').innerHTML = `Subtotal predial = ${brl(params.aluguel)} + ${brl(params.util)} + ${brl(params.seguros)} + ${brl(params.seguranca)} + ${brl(params.manut)} = <strong>${brl(subtotalPredial)}</strong>`;
+
+    // Step 2
+    document.getElementById('vCustoM2').textContent = brl(custoM2);
+    document.getElementById('fCustoM2').textContent = `(${brl(subtotalPredial)}) ÷ ${num2(params.areaTotal)} m²`;
+    document.getElementById('vLocPrateleira').textContent = brl(custoPorLocalizacao);
+    document.getElementById('vPosPalete').textContent = brl(custoPorPosicao);
+    document.getElementById('fLocs').innerHTML = `Prateleira: ${brl(custoM2)} × 0,25 m² = <strong>${brl(custoPorLocalizacao)}</strong><br/>Porta‑palete: ${brl(custoM2)} × 1,0 m² = <strong>${brl(custoPorPosicao)}</strong>`;
+
+    // Step 3
+    document.getElementById('hBaseArea').textContent = brl(subtotalPredial);
+    document.getElementById('hDepEstr').textContent = brl(params.deprecEstr);
+    document.getElementById('hTi').textContent = brl(metadeTI);
+    document.getElementById('hAdm').textContent = brl(metadeAdm);
+    document.getElementById('hTotal').textContent = brl(holding);
+    document.getElementById('fHolding').innerHTML = `Holding = ${brl(subtotalPredial)} + ${brl(params.deprecEstr)} + 50% TI (${brl(params.ti)} → ${brl(metadeTI)}) + 50% (MO ind. ${brl(params.moIndireta)} + Overhead ${brl(params.overheadAdm)}) → ${brl(metadeAdm)} = <strong>${brl(holding)}</strong>`;
+    document.getElementById('hUnit').textContent = `${brl(custoPorUnidadeEstoque)} / unidade`;
+
+    // Step 4
+    document.getElementById('fReceb').innerHTML = `Custo/h MOD = ${brl(params.custoHoraMOD)}; Tempo = ${num2(params.recebMinPorLinha)} min/linha; Etiqueta = ${brl(params.etiquetaPorLinha)}<br>Unitário = (${num2(params.recebMinPorLinha)} ÷ 60 × ${brl(params.custoHoraMOD)}) + ${brl(params.etiquetaPorLinha)} = <strong>${brl(recebCusto)}</strong>`;
+    document.getElementById('recebMath').textContent = brl(recebCusto);
+    document.getElementById('recebValor').textContent = 'R$ 1,60 (apresentado)';
+
+    // Step 5
+    document.getElementById('fPut').innerHTML = `(${num2(params.putMinPorLinha)} ÷ 60 × ${brl(params.custoHoraMOD)}) = <strong>${brl(putCusto)}</strong>`;
+    document.getElementById('putValor').textContent = brl(putCusto);
+
+    // Step 6
+    document.getElementById('fPick').innerHTML = `(${num2(params.pickMinPorLinha)} ÷ 60 × ${brl(params.custoHoraMOD)}) + etiqueta ${brl(params.etiquetaPorLinha)} = <strong>${brl(pickCusto)}</strong>`;
+    document.getElementById('pickValor').textContent = brl(pickCusto);
+
+    // Step 7
+    document.getElementById('fEmb').innerHTML = `(${num2(params.embMinPorPedido)} ÷ 60 × ${brl(params.custoHoraMOD)}) + insumos ${brl(params.insumosPorPedido)} = <strong>${brl(embCusto)}</strong>`;
+    document.getElementById('embValor').textContent = brl(embCusto);
+
+    // Step 8
+    document.getElementById('fExp').innerHTML = `(${num2(params.expedicaoMiscHoras)} h × ${brl(params.custoHoraMOD)}) ÷ ${params.pedidosMes} pedidos = <strong>${brl(expCusto)}</strong>`;
+    document.getElementById('expValor').textContent = brl(expCusto);
+
+    // Step 9
+    document.getElementById('fInv').innerHTML = `(${num2(params.inventarioHoras)} h × ${brl(params.custoHoraMOD)}) ÷ ${params.skusContadosMes} SKUs = <strong>${brl(invCusto)}</strong>`;
+    document.getElementById('invValor').textContent = brl(invCusto);
+
+    // Step 10
+    document.getElementById('moDireta').textContent = brl(params.moDireta);
+    document.getElementById('moIndireta').textContent = brl(params.moIndireta);
+    document.getElementById('fUtil').innerHTML = `Horas consumidas = Receb ${num2(hReceb)}h + Put ${num2(hPut)}h + Pick ${num2(hPick)}h + Emb ${num2(hEmb)}h + Exp ${num2(hExp)}h + Inv ${num2(hInv)}h = <strong>${num2(hConsumidas)}h</strong><br>Disponíveis = 2 operadores × 176h = <strong>${num2(hDisponiveis)}h</strong>`;
+    document.getElementById('utilizacao').textContent = (utilizacao*100).toLocaleString('pt-BR', {maximumFractionDigits:1}) + '%';
+    document.getElementById('prodPicking').textContent = num2(prodPicking) + ' linhas/h';
+
+    // Step 11
+    document.getElementById('fAdmin').innerHTML = `Admin. compras/receb. total = <strong>${brl(params.adminCompras)}</strong><br>Custo por linha comprada = ${brl(params.adminCompras)} ÷ ${params.linhasCompradas} = <strong>${brl(params.adminCompras/params.linhasCompradas)}</strong>`;
+    document.getElementById('adminValor').textContent = brl(params.adminCompras/params.linhasCompradas);
+
+    // Step 12 — Consolidação
+    document.getElementById('cPredial').textContent = brl(subtotalPredial);
+    document.getElementById('cTI').textContent = brl(params.ti);
+    document.getElementById('cDepEstr').textContent = brl(params.deprecEstr);
+    document.getElementById('cDepMHE').textContent = brl(params.deprecMHE);
+    document.getElementById('cOver').textContent = brl(params.overheadAdm);
+    document.getElementById('cMOD').textContent = brl(params.moDireta);
+    document.getElementById('cMOI').textContent = brl(params.moIndireta);
+    document.getElementById('cCons').textContent = brl(params.consumiveis);
+    document.getElementById('cAdmin').textContent = brl(params.adminCompras);
+    document.getElementById('cTotal').textContent = brl(totalMes);
+
+    document.getElementById('kpiPedido').textContent = brl(totalMes / params.pedidosMes);
+    document.getElementById('kpiLinha').textContent = brl(totalMes / params.linhasExpedidas);
+    document.getElementById('kpiUnit').textContent = brl(custoPorUnidadeEstoque);
+    document.getElementById('kpiM2').textContent = brl(subtotalPredial / params.areaTotal);
+  }
+
+  // =====================
+  // Navegação (fade)
+  // =====================
+  const steps = Array.from(document.querySelectorAll('.step'));
+  let current = 0;
+
+  function goToStep(i){
+    if(i < 0 || i >= steps.length) return;
+    steps[current].classList.remove('show');
+    current = i;
+    steps[current].classList.add('show');
+    document.getElementById('btnBack').disabled = current === 0;
+    document.getElementById('btnNext').textContent = current === steps.length-1 ? 'Recomeçar' : 'Avançar';
+    document.getElementById('btnNext').innerHTML = current === steps.length-1 ? 'Recomeçar <i class="bi bi-arrow-counterclockwise"></i>' : 'Avançar <i class="bi bi-arrow-right"></i>';
+    updateStepper();
+  }
+
+  function updateStepper(){
+    const pct = (current/(steps.length-1))*100;
+    document.getElementById('bar').style.width = pct + '%';
+    for(let b=0;b<steps.length;b++){
+      const el = document.getElementById('bubble-'+b);
+      if(!el) continue;
+      el.classList.remove('active','done');
+      if(b < current) el.classList.add('done');
+      if(b === current) el.classList.add('active');
+    }
+  }
+
+  document.getElementById('btnBack').addEventListener('click', ()=> goToStep(current-1));
+  document.getElementById('btnNext').addEventListener('click', ()=> {
+    if(current === steps.length-1){ goToStep(0); return; }
+    goToStep(current+1);
+  });
+
+  // Inicializa
+  fill();
+  updateStepper();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

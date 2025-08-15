@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>UC7 — Custos Logísticos | Página Inicial</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    :root{ --brand:#0ea5e9; --ink:#0f172a; --muted:#64748b; --soft:#f0f9ff; }
+    body{ color:var(--ink); background:linear-gradient(180deg, var(--soft), #fff 35%); }
+    .navbar{ box-shadow:0 8px 24px rgba(2,6,23,.06); }
+    .hero{ background:radial-gradient(70% 80% at 50% 20%, #e0f2fe 0%, #fff 70%); border-bottom:1px solid #e5e7eb; }
+    .hero h1{ font-weight:800; letter-spacing:-.02em; }
+    .badge-soft{ background:#e0f2fe; color:#075985; }
+    .card{ border-radius:1rem; box-shadow:0 10px 30px rgba(2,6,23,.06); }
+    .card .emoji{ font-size:1.6rem; }
+    .kicker{ text-transform:uppercase; font-size:.78rem; letter-spacing:.14em; color:#0369a1; font-weight:700 }
+    .footer{ color:var(--muted); }
+    .soon{ opacity:.6 }
+    .btn-brand{ background:var(--brand); color:#fff; }
+    .btn-brand:hover{ filter:brightness(.95); color:#fff; }
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <nav class="navbar navbar-expand-lg bg-white sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#">UC7 — Custos Logísticos</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="nav">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="#conteudos">Conteúdos</a></li>
+          <li class="nav-item"><a class="nav-link" href="#como-estudar">Como estudar</a></li>
+          <li class="nav-item"><a class="nav-link" href="#sobre">Sobre</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero py-5">
+    <div class="container py-2">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+          <div class="kicker">Unidade Curricular 7</div>
+          <h1 class="display-5 mb-3">Custos Logísticos — prática, fórmulas e decisões 🌐📊</h1>
+          <p class="lead text-secondary">Materiais de apoio, estudos de caso e simuladores para apurar <strong>custos diretos e indiretos</strong> em <em>armazenagem</em>, <em>transportes</em>, <em>produção</em> e <em>formação de preço</em>. Tudo organizado para uso em aula e estudo autônomo.</p>
+          <div class="d-flex flex-wrap gap-2 mt-3">
+            <a class="btn btn-brand btn-lg" href="case1-armazenagem.html"><i class="bi bi-box-seam me-2"></i>Abrir Case: Custo de Armazenagem</a>
+            <a class="btn btn-outline-secondary btn-lg" href="#conteudos"><i class="bi bi-journals me-2"></i>Ver conteúdos</a>
+          </div>
+          <div class="mt-3">
+            <span class="badge badge-soft me-1">Logística</span>
+            <span class="badge badge-soft me-1">Custeio</span>
+            <span class="badge badge-soft me-1">KPIs</span>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="card p-4">
+            <div class="d-flex align-items-center mb-2"><i class="bi bi-graph-up-arrow me-2"></i><strong>Resultados que você vai medir</strong></div>
+            <ul class="mb-0">
+              <li>💸 Custo por pedido e por linha</li>
+              <li>🏷️ Custo por unidade estocada (holding)</li>
+              <li>📐 Custo por m² e por posição/localização</li>
+              <li>👥 Utilização e produtividade da equipe</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTEÚDOS -->
+  <section id="conteudos" class="py-5">
+    <div class="container">
+      <div class="d-flex align-items-end justify-content-between mb-3">
+        <h2 class="h3 mb-0">Conteúdos da UC7</h2>
+        <a class="btn btn-sm btn-outline-primary" href="#como-estudar">Como usar</a>
+      </div>
+      <div class="row g-3">
+        <!-- Armazenagem -->
+        <div class="col-md-6 col-xl-4">
+          <div class="card h-100 p-3">
+            <div class="d-flex align-items-center gap-2 mb-2"><span class="emoji">📦</span><h3 class="h5 mb-0">Custos de Armazenagem</h3></div>
+            <p class="text-secondary">Estudo completo: custos por m², localização/posição, processos, holding e KPIs. Passo a passo didático.</p>
+            <a class="btn btn-brand" href="case1-armazenagem.html">Abrir estudo</a>
+          </div>
+        </div>
+        <!-- Transportes -->
+        <div class="col-md-6 col-xl-4">
+          <div class="card h-100 p-3 soon">
+            <div class="d-flex align-items-center gap-2 mb-2"><span class="emoji">🚚</span><h3 class="h5 mb-0">Custos de Transporte</h3></div>
+            <p class="text-secondary">Estrutura de custos fixos/variáveis, pedágio, GRIS, por distância/peso/valor e comparativo de modais.</p>
+            <button class="btn btn-outline-secondary" disabled>Em breve</button>
+          </div>
+        </div>
+        <!-- Produção -->
+        <div class="col-md-6 col-xl-4">
+          <div class="card h-100 p-3 soon">
+            <div class="d-flex align-items-center gap-2 mb-2"><span class="emoji">🏭</span><h3 class="h5 mb-0">Custos de Produção</h3></div>
+            <p class="text-secondary">Custeio direto/indireto, CIF, depreciação, centros de custos e critérios de rateio aplicados.</p>
+            <button class="btn btn-outline-secondary" disabled>Em breve</button>
+          </div>
+        </div>
+        <!-- Formação de preço -->
+        <div class="col-md-6 col-xl-4">
+          <div class="card h-100 p-3 soon">
+            <div class="d-flex align-items-center gap-2 mb-2"><span class="emoji">💲</span><h3 class="h5 mb-0">Formação de Preço de Venda</h3></div>
+            <p class="text-secondary">Markup, impostos, comissionamento, frete, custos logísticos e margem-alvo.</p>
+            <button class="btn btn-outline-secondary" disabled>Em breve</button>
+          </div>
+        </div>
+        <!-- Margem de contribuição -->
+        <div class="col-md-6 col-xl-4">
+          <div class="card h-100 p-3 soon">
+            <div class="d-flex align-items-center gap-2 mb-2"><span class="emoji">📈</span><h3 class="h5 mb-0">Margem de Contribuição</h3></div>
+            <p class="text-secondary">Margem unitária, por pedido e por cliente; efeito dos custos logísticos no ponto de equilíbrio.</p>
+            <button class="btn btn-outline-secondary" disabled>Em breve</button>
+          </div>
+        </div>
+        <!-- Ponto de equilíbrio -->
+        <div class="col-md-6 col-xl-4">
+          <div class="card h-100 p-3 soon">
+            <div class="d-flex align-items-center gap-2 mb-2"><span class="emoji">⚖️</span><h3 class="h5 mb-0">Ponto de Equilíbrio</h3></div>
+            <p class="text-secondary">PEQ contábil, econômico e financeiro com sensibilidade a custos logísticos.</p>
+            <button class="btn btn-outline-secondary" disabled>Em breve</button>
+          </div>
+        </div>
+        <!-- Custos de pedido -->
+        <div class="col-md-6 col-xl-4">
+          <div class="card h-100 p-3 soon">
+            <div class="d-flex align-items-center gap-2 mb-2"><span class="emoji">🗂️</span><h3 class="h5 mb-0">Custo de Pedido</h3></div>
+            <p class="text-secondary">Custo por linha comprada, tempos administrativos e automação (EDI/NF-e).</p>
+            <button class="btn btn-outline-secondary" disabled>Em breve</button>
+          </div>
+        </div>
+        <!-- Processos de armazém -->
+        <div class="col-md-6 col-xl-4">
+          <div class="card h-100 p-3 soon">
+            <div class="d-flex align-items-center gap-2 mb-2"><span class="emoji">🔧</span><h3 class="h5 mb-0">Custo por Processo (CD)</h3></div>
+            <p class="text-secondary">Recebimento, put‑away, picking, embalagem, expedição e inventário — tempos e unitários.</p>
+            <button class="btn btn-outline-secondary" disabled>Em breve</button>
+          </div>
+        </div>
+        <!-- Mão de obra -->
+        <div class="col-md-6 col-xl-4">
+          <div class="card h-100 p-3 soon">
+            <div class="d-flex align-items-center gap-2 mb-2"><span class="emoji">👥</span><h3 class="h5 mb-0">Mão de Obra Direta/Indireta</h3></div>
+            <p class="text-secondary">Dimensionamento, custo/hora, utilização e impactos no custo total logístico.</p>
+            <button class="btn btn-outline-secondary" disabled>Em breve</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO ESTUDAR -->
+  <section id="como-estudar" class="py-5 bg-white">
+    <div class="container">
+      <h2 class="h3">Como estudar e usar os materiais</h2>
+      <ol class="mt-3">
+        <li>Comece por <strong>Custos de Armazenagem</strong> para dominar o conceito de <em>holding</em> e os unitários por processo.</li>
+        <li>Use os <strong>KPIs</strong> para comparar cenários e direcionar melhorias (picking, embalagem, ocupação de m²).</li>
+        <li>Avance para <strong>Transporte</strong> e <strong>Formação de Preço</strong> para fechar a visão fim‑a‑fim.</li>
+      </ol>
+      <div class="alert alert-info mt-3"><i class="bi bi-lightbulb"></i> Dica: leve os números para uma planilha e brinque com as variáveis (salário, tempos, volumes). Ver o impacto nos KPIs é a melhor aula! 😉</div>
+    </div>
+  </section>
+
+  <!-- SOBRE -->
+  <section id="sobre" class="py-5">
+    <div class="container">
+      <h2 class="h3">Sobre esta UC</h2>
+      <p class="mb-0">Material didático para a <strong>Unidade Curricular 7 — Custos Logísticos</strong>, com foco em tomada de decisão e fundamentos de custeio aplicados à logística. Elaborado para aulas práticas, estudos individuais e projetos integradores.</p>
+    </div>
+  </section>
+
+  <footer class="footer py-4 border-top">
+    <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <span>© <span id="y"></span> UC7 — Custos Logísticos</span>
+      <div class="d-flex gap-3 small">
+        <a class="text-decoration-none" href="#conteudos">Conteúdos</a>
+        <a class="text-decoration-none" href="#como-estudar">Como estudar</a>
+        <a class="text-decoration-none" href="#sobre">Sobre</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
