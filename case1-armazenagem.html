@@ -36,35 +36,64 @@
     .pill{display:inline-block;border-radius:999px;padding:.35rem .75rem;background:#f1f5f9}
     .list-check i{color:var(--ok);margin-right:.5rem}
     .sticky-nav{position:sticky;top:0;z-index:1000;background:#ffffffd9;backdrop-filter:saturate(180%) blur(6px)}
-  </style>
+  
+    /* --- Mobile responsiveness for header/stepper --- */
+    .header-grid{}
+    @media (max-width: 767.98px){
+      .header-grid{padding-top:.25rem;padding-bottom:.5rem}
+    }
+    .stepper-wrap{overflow-x:auto; -webkit-overflow-scrolling:touch; white-space:nowrap; padding:.25rem 0;}
+    .stepper-wrap .step-index{display:inline-flex; margin-right:.5rem; flex:0 0 auto}
+    .stepper-wrap::-webkit-scrollbar{height:6px}
+    .stepper-wrap::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px}
+    .btn-row{display:flex; gap:.5rem; justify-content:space-between}
+    @media (min-width: 768px){
+      .btn-row{justify-content:flex-end}
+    }
+    .progress-row{min-width:0}
+    .mobile-step{font-size:.85rem; color:#475569}
+    </style>
 </head>
 <body>
-  <header class="hero py-4 sticky-nav">
-    <div class="container d-flex align-items-center justify-content-between">
-      <div class="d-flex align-items-center gap-3">
-        <span class="step-index active" id="bubble-0">1</span>
-        <span class="step-index" id="bubble-1">2</span>
-        <span class="step-index" id="bubble-2">3</span>
-        <span class="step-index" id="bubble-3">4</span>
-        <span class="step-index" id="bubble-4">5</span>
-        <span class="step-index" id="bubble-5">6</span>
-        <span class="step-index" id="bubble-6">7</span>
-        <span class="step-index" id="bubble-7">8</span>
-        <span class="step-index" id="bubble-8">9</span>
-        <span class="step-index" id="bubble-9">10</span>
-        <span class="step-index" id="bubble-10">11</span>
-        <span class="step-index" id="bubble-11">12</span>
-        <span class="step-index" id="bubble-12">13</span>
-      </div>
-      <div class="flex-grow-1 mx-3">
-        <div class="progress">
-          <div class="progress-bar bg-primary" id="bar" role="progressbar" style="width:0%"></div>
+  <header class="hero py-3 sticky-nav">
+    <div class="container header-grid">
+      <div class="row align-items-center g-2">
+        <!-- Buttons (mobile first) -->
+        <div class="col-12 col-md-3 order-1 order-md-3">
+          <div class="btn-row">
+            <button class="btn btn-outline-secondary flex-fill flex-md-grow-0" id="btnBack"><i class="bi bi-arrow-left"></i> Voltar</button>
+            <button class="btn btn-primary flex-fill flex-md-grow-0" id="btnNext">Avançar <i class="bi bi-arrow-right"></i></button>
+          </div>
+          <div class="d-md-none mt-2 mobile-step text-center"><span id="mobileStepCounter">Etapa 1 de 13</span></div>
+        </div>
+        <!-- Progress bar -->
+        <div class="col-12 col-md order-2 order-md-2 progress-row">
+          <div class="progress">
+            <div class="progress-bar bg-primary" id="bar" role="progressbar" style="width:0%"></div>
+          </div>
+        </div>
+        <!-- Stepper bubbles (horizontal scroll on mobile) -->
+        <div class="col-12 col-md-5 order-3 order-md-1">
+          <div class="d-flex align-items-center gap-2">
+            <div class="stepper-wrap w-100" id="stepperWrap">
+              <span class="step-index active" id="bubble-0">1</span>
+              <span class="step-index" id="bubble-1">2</span>
+              <span class="step-index" id="bubble-2">3</span>
+              <span class="step-index" id="bubble-3">4</span>
+              <span class="step-index" id="bubble-4">5</span>
+              <span class="step-index" id="bubble-5">6</span>
+              <span class="step-index" id="bubble-6">7</span>
+              <span class="step-index" id="bubble-7">8</span>
+              <span class="step-index" id="bubble-8">9</span>
+              <span class="step-index" id="bubble-9">10</span>
+              <span class="step-index" id="bubble-10">11</span>
+              <span class="step-index" id="bubble-11">12</span>
+              <span class="step-index" id="bubble-12">13</span>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="d-flex gap-2">
-        <button class="btn btn-outline-secondary" id="btnBack"><i class="bi bi-arrow-left"></i> Voltar</button>
-        <button class="btn btn-primary" id="btnNext">Avançar <i class="bi bi-arrow-right"></i></button>
-      </div>
+    </div>
     </div>
   </header>
 
@@ -567,6 +596,14 @@
       if(b < current) el.classList.add('done');
       if(b === current) el.classList.add('active');
     }
+
+    // Atualiza contador mobile e faz scroll do bubble ativo em telas pequenas
+    const mobileCounter = document.getElementById('mobileStepCounter');
+    if(mobileCounter){ mobileCounter.textContent = `Etapa ${current+1} de ${steps.length}`; }
+    const activeBubble = document.getElementById(`bubble-${current}`);
+    const wrap = document.getElementById('stepperWrap');
+    if(activeBubble && wrap){ activeBubble.scrollIntoView({behavior:'smooth', inline:'center', block:'nearest'}); }
+
   }
 
   document.getElementById('btnBack').addEventListener('click', ()=> goToStep(current-1));
