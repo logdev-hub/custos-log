@@ -1,1 +1,704 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🚚 Case 2 — Custos de Transporte (Van | Caminhão | Carreta)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet" />
+  <style>
+    :root{
+      --brand:#2563eb;      /* azul */
+      --soft:#eff6ff;
+      --ok:#10b981;         /* verde */
+      --ink:#0f172a;
+    }
+    body{ background:linear-gradient(180deg,var(--soft) 0%, #ffffff 60%); color:#0f172a }
+    .hero{ background:radial-gradient(70% 70% at 50% 20%, #dbeafe 0%, #fff 70%); border-bottom:1px solid #e5e7eb }
+    .badge-soft{ background:#e0e7ff; color:#1e3a8a }
+    .card{ border-radius:1rem; box-shadow:0 10px 25px rgba(0,0,0,.06) }
+    .step{ display:none; opacity:0; transition:opacity .35s ease }
+    .step.show{ display:block; opacity:1 }
+    .step-index{ width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700 }
+    .step-index.active{ background:var(--brand); color:#fff }
+    .step-index.done{ background:var(--ok); color:#fff }
+    .progress{ height:8px }
+    .pill{ display:inline-block; border-radius:999px; padding:.35rem .75rem; background:#f1f5f9 }
+    .formula{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Courier New", monospace; background:#f8fafc; border-radius:.5rem; padding:.75rem }
+    .kpi{ border-left:6px solid var(--brand); padding-left:1rem }
+    .kpi .value{ font-size:1.35rem; font-weight:800; color:#111827 }
+    .sticky-nav{ position:sticky; top:0; z-index:1000; background:#ffffffd9; backdrop-filter:saturate(180%) blur(6px) }
+
+    .opt .btn{ border-radius:.75rem }
+    .opt .btn-check:checked + .btn{ background:var(--brand); border-color:var(--brand); color:#fff }
+    .unit{ color:#64748b }
+    .small-note{ color:#64748b; font-size:.92rem }
+    .table-sm th, .table-sm td{ vertical-align:middle }
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <nav class="navbar navbar-expand-lg bg-white sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">UC7 — Custos Logísticos</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero py-5">
+    <div class="container">
+      <div class="row align-items-center g-4">
+        <div class="col-md-7">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="pill">🚚 Case 2</span>
+            <span class="badge badge-soft">Transporte terrestre</span>
+            <span class="pill">Horizonte: por viagem</span>
+          </div>
+          <h1 class="h3 mb-2">Custos de Transporte — estrutura completa e simulação</h1>
+          <p class="mb-0 text-secondary">Composições de <strong>custos fixos e variáveis</strong>, <strong>pedágio</strong>, <strong>GRIS</strong>, apuração <strong>por distância/peso/valor</strong>, comparativo entre <em>van, caminhão e carreta</em> e duas cotações de prestadores por modal.</p>
+        </div>
+        <div class="col-md-5">
+          <div class="card p-3">
+            <div class="progress mb-2"><div class="progress-bar bg-primary" id="bar" role="progressbar" style="width:0%"></div></div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="step-index active" id="bubble-0">1</span>
+              <span class="step-index" id="bubble-1">2</span>
+              <span class="step-index" id="bubble-2">3</span>
+              <span class="step-index" id="bubble-3">4</span>
+              <span class="step-index" id="bubble-4">5</span>
+              <span class="step-index" id="bubble-5">6</span>
+              <span class="step-index" id="bubble-6">7</span>
+              <span class="step-index" id="bubble-7">8</span>
+              <span class="step-index" id="bubble-8">9</span>
+              <span class="step-index" id="bubble-9">10</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container my-4">
+
+    <!-- STEP 0: Enunciado + parâmetros -->
+    <section class="step show" id="step-0">
+      <div class="card p-4">
+        <h2 class="h4">🎯 Cenário e parâmetros</h2>
+        <p>Escolha o <strong>modal</strong> e informe distância, peso e valor da carga. Ajuste retorno vazio e docas para ver o impacto nos custos.</p>
+
+        <div class="row g-4">
+          <div class="col-lg-5">
+            <div class="opt d-grid gap-2">
+              <input class="btn-check" type="radio" name="m" id="m-van" value="van" checked>
+              <label class="btn btn-outline-primary d-flex justify-content-between align-items-center" for="m-van">
+                <span>🚐 Van (até ~1,2 t)</span><span class="unit small">urbano/regional</span>
+              </label>
+              <input class="btn-check" type="radio" name="m" id="m-truck" value="truck">
+              <label class="btn btn-outline-primary d-flex justify-content-between align-items-center" for="m-truck">
+                <span>🚛 Caminhão 3/4</span><span class="unit small">regional/interestadual</span>
+              </label>
+              <input class="btn-check" type="radio" name="m" id="m-carreta" value="carreta">
+              <label class="btn btn-outline-primary d-flex justify-content-between align-items-center" for="m-carreta">
+                <span>🛣️ Carreta 6x2 (articulado)</span><span class="unit small">longa distância</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="col-lg-7">
+            <div class="row g-3">
+              <div class="col-6">
+                <label class="form-label">Distância (ida), km</label>
+                <input type="number" min="1" step="1" id="iKm" class="form-control" value="120">
+              </div>
+              <div class="col-6">
+                <label class="form-label">Retorno vazio (%)</label>
+                <input type="number" min="0" max="100" step="1" id="iRet" class="form-control" value="70">
+              </div>
+              <div class="col-6">
+                <label class="form-label">Horas doca (total)</label>
+                <input type="number" min="0" step=".5" id="iDoca" class="form-control" value="2">
+              </div>
+              <div class="col-6">
+                <label class="form-label">Velocidade média (km/h)</label>
+                <input type="number" min="20" step="1" id="iVm" class="form-control" value="45">
+              </div>
+              <div class="col-6">
+                <label class="form-label">Peso embarcado (kg)</label>
+                <input type="number" min="1" step="1" id="iPeso" class="form-control" value="600">
+              </div>
+              <div class="col-6">
+                <label class="form-label">Valor da mercadoria (R$)</label>
+                <input type="number" min="0" step="50" id="iValor" class="form-control" value="50000">
+              </div>
+              <div class="col-6">
+                <label class="form-label">Pedágios (R$ por km)</label>
+                <input type="number" min="0" step=".01" id="iPedKm" class="form-control" value="0.10">
+                <div class="small-note">Ajuste conforme sua rota; aplicamos ao <em>km total</em> (ida + retorno).</div>
+              </div>
+              <div class="col-6">
+                <label class="form-label">GRIS / ad-valorem (%)</label>
+                <input type="number" min="0" step=".01" id="iGris" class="form-control" value="0.30">
+                <div class="small-note">Percentual sobre o valor da NF (padrão 0,30%).</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="my-4" />
+        <div class="row g-3">
+          <div class="col-lg-4">
+            <div class="kpi">
+              <div class="text-muted">Custo estimado da viagem</div>
+              <div class="value" id="kTotal">–</div>
+              <div class="small-note">Inclui fixos + variáveis + pedágio + GRIS (sem margem do prestador).</div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="kpi">
+              <div class="text-muted">R$/km (total)</div>
+              <div class="value" id="kKm">–</div>
+              <div class="small-note">Sobre o km total considerado (ida + retorno).</div>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div class="kpi">
+              <div class="text-muted">R$/kg (frete técnico)</div>
+              <div class="value" id="kKg">–</div>
+              <div class="small-note">Custo técnico por kg — útil para comparação rápida entre modais.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 1: Estrutura de custos fixos -->
+    <section class="step" id="step-1">
+      <div class="card p-4">
+        <h2 class="h4">🏠 Custos fixos (mês) — veículo + operação</h2>
+        <p>Itens recorrentes que não variam com a distância da viagem; são rateados por <strong>hora produtiva</strong> para precificação por viagem.</p>
+        <div class="row g-3">
+          <div class="col-lg-7">
+            <table class="table table-sm align-middle">
+              <thead><tr><th>Item</th><th class="text-end">R$ / mês</th></tr></thead>
+              <tbody id="tbodyFixos"></tbody>
+              <tfoot><tr class="table-light"><th>Total fixos</th><th class="text-end" id="tFixos"></th></tr></tfoot>
+            </table>
+          </div>
+          <div class="col-lg-5">
+            <div class="formula" id="fFixos"></div>
+            <div class="small-note mt-2">Baseado na estrutura da planilha (depreciação/financeiro, seguros, IPVA/licenciamento, rastreamento, administração e equipe).</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 2: Custos variáveis por km -->
+    <section class="step" id="step-2">
+      <div class="card p-4">
+        <h2 class="h4">⛽ Custos variáveis — por km</h2>
+        <p>Itens que crescem com a distância percorrida: <strong>combustível, manutenção, pneus, lubrificantes</strong>.</p>
+        <div class="row g-3">
+          <div class="col-lg-7">
+            <table class="table table-sm align-middle">
+              <thead><tr><th>Item</th><th class="text-end">R$ / km</th></tr></thead>
+              <tbody id="tbodyVar"></tbody>
+              <tfoot><tr class="table-light"><th>Total variáveis</th><th class="text-end" id="tVar"></th></tr></tfoot>
+            </table>
+          </div>
+          <div class="col-lg-5">
+            <div class="formula" id="fVar"></div>
+            <div class="small-note mt-2">Preço do diesel e consumo por modal estão parametrizados e podem ser atualizados no código.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 3: Pedágio e GRIS -->
+    <section class="step" id="step-3">
+      <div class="card p-4">
+        <h2 class="h4">🧾 Pedágio e GRIS</h2>
+        <div class="row g-3">
+          <div class="col-lg-7">
+            <table class="table table-sm">
+              <tbody>
+                <tr><td>Pedágio por km (parametrizado)</td><td class="text-end" id="vPedKm"></td></tr>
+                <tr><td>Pedágio total (km total × ped/km)</td><td class="text-end" id="vPedTotal"></td></tr>
+                <tr><td>GRIS/ad-valorem (%)</td><td class="text-end" id="vGrisPct"></td></tr>
+                <tr><td>GRIS sobre valor da carga</td><td class="text-end" id="vGris"></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-lg-5">
+            <div class="formula" id="fPedGris"></div>
+            <div class="small-note mt-2">GRIS incide sobre o <em>valor da mercadoria</em>. Pedágio é aplicado ao km total (ida + retorno conforme retorno vazio informado).</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 4: Rateio dos fixos por hora -->
+    <section class="step" id="step-4">
+      <div class="card p-4">
+        <h2 class="h4">⏱️ Fixos rateados por hora</h2>
+        <div class="row g-3">
+          <div class="col-lg-7">
+            <table class="table table-sm">
+              <tbody>
+                <tr><td>Horas produtivas/mês</td><td class="text-end" id="vHorasMes"></td></tr>
+                <tr><td>Custo fixo por hora</td><td class="text-end" id="vFixoHora"></td></tr>
+                <tr><td>Horas de viagem (trajeto + docas)</td><td class="text-end" id="vHorasViagem"></td></tr>
+                <tr class="table-light"><th>Custo fixo desta viagem</th><th class="text-end" id="vFixoViagem"></th></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-lg-5"><div class="formula" id="fFixoHora"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 5: Custo técnico da viagem -->
+    <section class="step" id="step-5">
+      <div class="card p-4">
+        <h2 class="h4">📊 Custo técnico da viagem</h2>
+        <div class="row g-3">
+          <div class="col-lg-7">
+            <table class="table table-sm">
+              <tbody>
+                <tr><td>Km total considerado</td><td class="text-end" id="vKmTotal"></td></tr>
+                <tr><td>Variáveis (R$/km × km)</td><td class="text-end" id="vVarViagem"></td></tr>
+                <tr><td>Pedágios</td><td class="text-end" id="vPedagios"></td></tr>
+                <tr><td>GRIS</td><td class="text-end" id="vGrisTot"></td></tr>
+                <tr><td>Fixos rateados</td><td class="text-end" id="vFixTot"></td></tr>
+                <tr class="table-light"><th>Total (sem margem)</th><th class="text-end" id="vTotal"></th></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-lg-5">
+            <div class="kpi mb-3">
+              <div class="text-muted">R$/km</div><div class="value" id="kpiKm"></div>
+              <div class="small-note">Útil para comparação entre rotas.</div>
+            </div>
+            <div class="kpi">
+              <div class="text-muted">R$/kg</div><div class="value" id="kpiKg"></div>
+              <div class="small-note">Usa o peso informado para rateio.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 6: Comparativo rápido entre modais -->
+    <section class="step" id="step-6">
+      <div class="card p-4">
+        <h2 class="h4">🧮 Comparativo entre modais (mesma viagem)</h2>
+        <p>Aplica a mesma distância/peso/valor aos três modais para comparação direta.</p>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead><tr><th>Modal</th><th class="text-end">R$/km</th><th class="text-end">Total (R$)</th><th class="text-end">R$/kg</th><th class="text-end">Capacidade</th></tr></thead>
+            <tbody id="tbodyComp"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 7: Cotações de prestadores -->
+    <section class="step" id="step-7">
+      <div class="card p-4">
+        <h2 class="h4">🤝 Prestadores — 2 cotações por modal</h2>
+        <p>Aplicamos <strong>margem operacional</strong> e <strong>política de GRIS</strong> de cada prestador sobre o custo técnico da viagem.</p>
+        <div class="row g-3" id="quotes"></div>
+      </div>
+    </section>
+
+    <!-- STEP 8: Sensibilidade rápida -->
+    <section class="step" id="step-8">
+      <div class="card p-4">
+        <h2 class="h4">🎚️ Sensibilidade — distância</h2>
+        <p>Mova o controle e observe como R$/km e total reagem à distância.</p>
+        <div class="row g-3">
+          <div class="col-lg-6">
+            <input type="range" class="form-range" min="20" max="1200" step="10" id="rDist" />
+            <div class="small d-flex justify-content-between"><span>20 km</span><span id="rDistVal">—</span><span>1.200 km</span></div>
+          </div>
+          <div class="col-lg-6">
+            <div class="kpi mb-3"><div class="text-muted">Novo total (R$)</div><div class="value" id="sensTotal">–</div></div>
+            <div class="kpi"><div class="text-muted">Novo R$/km</div><div class="value" id="sensKm">–</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 9: Recomendações -->
+    <section class="step" id="step-9">
+      <div class="card p-4">
+        <h2 class="h4">💡 Notas & recomendações</h2>
+        <ul class="mb-0">
+          <li>Pedágios variam muito por corredor logístico — ajuste <em>R$/km</em> para sua rota.</li>
+          <li>Use <strong>retorno vazio</strong> realista. Rotas com carga de retorno reduzem fortemente o custo por km.</li>
+          <li><strong>GRIS</strong> raramente é fixo: prestadores adotam percentuais distintos e valores mínimos por NF.</li>
+          <li>Para cargas fracionadas, avalie também tabelas por <em>peso/cubagem</em> da transportadora — este case é de <em>custo técnico</em>.</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="py-4 border-top">
+    <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <span>© <span id="y"></span> UC7 — Custos Logísticos</span>
+      <a class="text-decoration-none" href="index.html">Voltar</a>
+    </div>
+  </footer>
+
+  <script>
+    // ============
+    // Parâmetros
+    // ============
+    const BRL = v => v.toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+    const NUM = v => v.toLocaleString('pt-BR',{maximumFractionDigits:2});
+
+    // Custos baseados na planilha (estrutura) com atualização de valores plausíveis 2024/2025.
+    // Você pode ajustar facilmente abaixo.
+    const MODAIS = {
+      van: {
+        nome: 'Van',
+        capacidadeKg: 1200,
+        horasProdMes: 176,
+        velocidadePadrao: 45,
+        // Fixos (R$/mês)
+        fixos: {
+          depreciacao: 2600,
+          seguro: 450,
+          ipvaLic: 100,
+          rastreamento: 120,
+          administracao: 350,
+          motorista: 3500,
+          outros: 200
+        },
+        // Variáveis (R$/km)
+        variaveis: {
+          combustivel: (6.20/9.0), // diesel / km/l
+          manutencao: 0.25,
+          pneus: 0.06,
+          lubrificantes: 0.03
+        },
+        pedagioKm: 0.10,
+        grisPct: 0.003
+      },
+      truck: {
+        nome: 'Caminhão 3/4',
+        capacidadeKg: 6000,
+        horasProdMes: 176,
+        velocidadePadrao: 55,
+        fixos: {
+          depreciacao: 4800,
+          seguro: 1200,
+          ipvaLic: 300,
+          rastreamento: 150,
+          administracao: 500,
+          motorista: 4500,
+          outros: 300
+        },
+        variaveis: {
+          combustivel: (6.20/3.5),
+          manutencao: 0.45,
+          pneus: 0.35,
+          lubrificantes: 0.08
+        },
+        pedagioKm: 0.25,
+        grisPct: 0.003
+      },
+      carreta: {
+        nome: 'Carreta 6x2',
+        capacidadeKg: 27000,
+        horasProdMes: 176,
+        velocidadePadrao: 65,
+        fixos: {
+          depreciacao: 7200,
+          seguro: 1800,
+          ipvaLic: 400,
+          rastreamento: 150,
+          administracao: 700,
+          motorista: 5500,
+          ajudante: 2200,  // equipe adicional
+          outros: 400
+        },
+        variaveis: {
+          combustivel: (6.20/2.5),
+          manutencao: 0.60,
+          pneus: 0.55,
+          lubrificantes: 0.10
+        },
+        pedagioKm: 0.35,
+        grisPct: 0.003
+      }
+    };
+
+    // Prestadores (margem operacional + política de GRIS)
+    const PRESTADORES = {
+      van: [
+        { nome:'Transportadora Alfa', margem:0.12, grisPct:0.0025, grisMin:15 },
+        { nome:'Transportadora Beta', margem:0.18, grisPct:0.0035, grisMin:25 }
+      ],
+      truck: [
+        { nome:'Rodoviária Norte', margem:0.14, grisPct:0.0025, grisMin:30 },
+        { nome:'Viasul Log', margem:0.20, grisPct:0.0030, grisMin:45 }
+      ],
+      carreta: [
+        { nome:'Atlas Cargo', margem:0.12, grisPct:0.0020, grisMin:60 },
+        { nome:'Estradal BR', margem:0.18, grisPct:0.0028, grisMin:80 }
+      ]
+    };
+
+    // ============
+    // Estado
+    // ============
+    const els = {
+      bar: document.getElementById('bar'),
+      bubbles: [...document.querySelectorAll('.step-index')],
+      steps: [...document.querySelectorAll('.step')],
+      // inputs
+      km: document.getElementById('iKm'),
+      ret: document.getElementById('iRet'),
+      doca: document.getElementById('iDoca'),
+      vm: document.getElementById('iVm'),
+      peso: document.getElementById('iPeso'),
+      valor: document.getElementById('iValor'),
+      pedKm: document.getElementById('iPedKm'),
+      gris: document.getElementById('iGris'),
+      radios: [...document.querySelectorAll('input[name="m"]')],
+      // KPIs
+      kTotal: document.getElementById('kTotal'),
+      kKm: document.getElementById('kKm'),
+      kKg: document.getElementById('kKg'),
+      // Tabelas e campos
+      tbodyFixos: document.getElementById('tbodyFixos'),
+      tFixos: document.getElementById('tFixos'),
+      fFixos: document.getElementById('fFixos'),
+      tbodyVar: document.getElementById('tbodyVar'),
+      tVar: document.getElementById('tVar'),
+      fVar: document.getElementById('fVar'),
+      vPedKm: document.getElementById('vPedKm'),
+      vPedTotal: document.getElementById('vPedTotal'),
+      vGrisPct: document.getElementById('vGrisPct'),
+      vGris: document.getElementById('vGris'),
+      fPedGris: document.getElementById('fPedGris'),
+      vHorasMes: document.getElementById('vHorasMes'),
+      vFixoHora: document.getElementById('vFixoHora'),
+      vHorasViagem: document.getElementById('vHorasViagem'),
+      vFixoViagem: document.getElementById('vFixoViagem'),
+      fFixoHora: document.getElementById('fFixoHora'),
+      vKmTotal: document.getElementById('vKmTotal'),
+      vVarViagem: document.getElementById('vVarViagem'),
+      vPedagios: document.getElementById('vPedagios'),
+      vGrisTot: document.getElementById('vGrisTot'),
+      vFixTot: document.getElementById('vFixTot'),
+      vTotal: document.getElementById('vTotal'),
+      kpiKm: document.getElementById('kpiKm'),
+      kpiKg: document.getElementById('kpiKg'),
+      tbodyComp: document.getElementById('tbodyComp'),
+      quotes: document.getElementById('quotes'),
+      // Sensibilidade
+      rDist: document.getElementById('rDist'),
+      rDistVal: document.getElementById('rDistVal'),
+      sensTotal: document.getElementById('sensTotal'),
+      sensKm: document.getElementById('sensKm')
+    };
+
+    // ============
+    // Helpers
+    // ============
+    let modalAtual = 'van';
+
+    function getParams(modalKey){
+      const base = MODAIS[modalKey];
+      const fixos = Object.values(base.fixos).reduce((a,b)=>a+(+b||0),0);
+      const varKm = Object.values(base.variaveis).reduce((a,b)=>a+(+b||0),0);
+      return { ...base, totalFixosMes: fixos, totalVarKm: varKm };
+    }
+
+    function kmTotal(){
+      const ida = +els.km.value || 0;
+      const retPct = (+els.ret.value || 0)/100;
+      return ida * (1 + retPct);
+    }
+
+    function horasViagem(vm){
+      const km = kmTotal();
+      const tempoDesloc = km / vm;
+      const doca = +els.doca.value || 0;
+      return tempoDesloc + doca;
+    }
+
+    function gris(valor, pct){ return Math.max(valor * pct, 0); }
+
+    // ============
+    // Render
+    // ============
+    function render(){
+      const m = getParams(modalAtual);
+
+      // Ajuste automático de campos padrão do modal
+      if(!els.vm.dataset.userTouched){ els.vm.value = m.velocidadePadrao }
+      if(!els.pedKm.dataset.userTouched){ els.pedKm.value = m.pedagioKm }
+      if(!els.gris.dataset.userTouched){ els.gris.value = (m.grisPct*100).toFixed(2) }
+
+      // Tabela fixos
+      els.tbodyFixos.innerHTML = '';
+      for(const [k,v] of Object.entries(m.fixos)){
+        const label = ({
+          depreciacao:'Depreciação/financiamento', seguro:'Seguro (casco/terceiros)',
+          ipvaLic:'IPVA/Licenciamento', rastreamento:'Rastreamento/telemetria',
+          administracao:'Overhead/administrativo', motorista:'Motorista',
+          ajudante:'Ajudante', outros:'Outros'
+        })[k] || k;
+        els.tbodyFixos.insertAdjacentHTML('beforeend', `<tr><td>${label}</td><td class="text-end">${BRL(v)}</td></tr>`);
+      }
+      els.tFixos.textContent = BRL(m.totalFixosMes);
+      els.fFixos.textContent = `Total fixos/mês = ${Object.keys(m.fixos).length} itens ⇒ ${BRL(m.totalFixosMes)}`;
+
+      // Variáveis
+      els.tbodyVar.innerHTML = '';
+      for(const [k,v] of Object.entries(m.variaveis)){
+        const label = ({combustivel:'Combustível', manutencao:'Manutenção', pneus:'Pneus', lubrificantes:'Lubrificantes'})[k]||k;
+        els.tbodyVar.insertAdjacentHTML('beforeend', `<tr><td>${label}</td><td class="text-end">${BRL(v)}</td></tr>`);
+      }
+      els.tVar.textContent = BRL(m.totalVarKm);
+      els.fVar.textContent = `Variáveis por km = soma dos itens ⇒ ${BRL(m.totalVarKm)} / km`;
+
+      // Pedágio & GRIS
+      const kmT = kmTotal();
+      const pedKm = +els.pedKm.value || 0;
+      const pedTotal = kmT * pedKm;
+      const grisPct = (+els.gris.value || 0)/100;
+      const vMerc = +els.valor.value || 0;
+      const vGris = gris(vMerc, grisPct);
+
+      els.vPedKm.textContent = BRL(pedKm);
+      els.vPedTotal.textContent = BRL(pedTotal);
+      els.vGrisPct.textContent = (grisPct*100).toFixed(2) + ' %';
+      els.vGris.textContent = BRL(vGris);
+      els.fPedGris.textContent = `Pedágio total = km total × R$/km; GRIS = valor NF × ${ (grisPct*100).toFixed(2) }%`;
+
+      // Fixos por hora
+      const hMes = m.horasProdMes;
+      const fixoHora = m.totalFixosMes / hMes;
+      const hViagem = horasViagem(+els.vm.value || m.velocidadePadrao);
+      const fixoViagem = hViagem * fixoHora;
+      els.vHorasMes.textContent = NUM(hMes);
+      els.vFixoHora.textContent = BRL(fixoHora);
+      els.vHorasViagem.textContent = NUM(hViagem);
+      els.vFixoViagem.textContent = BRL(fixoViagem);
+      els.fFixoHora.textContent = `Fixo/hora = ${BRL(m.totalFixosMes)} ÷ ${hMes} h = ${BRL(fixoHora)}`;
+
+      // Custo técnico da viagem
+      const varViagem = kmT * m.totalVarKm;
+      const total = varViagem + pedTotal + vGris + fixoViagem;
+      const peso = +els.peso.value || 1;
+      els.vKmTotal.textContent = NUM(kmT) + ' km';
+      els.vVarViagem.textContent = BRL(varViagem);
+      els.vPedagios.textContent = BRL(pedTotal);
+      els.vGrisTot.textContent = BRL(vGris);
+      els.vFixTot.textContent = BRL(fixoViagem);
+      els.vTotal.textContent = BRL(total);
+      els.kpiKm.textContent = BRL(total / kmT);
+      els.kpiKg.textContent = BRL(total / peso);
+
+      // KPIs do topo
+      els.kTotal.textContent = BRL(total);
+      els.kKm.textContent = BRL(total / kmT);
+      els.kKg.textContent = BRL(total / peso);
+
+      // Comparativo entre modais
+      els.tbodyComp.innerHTML = '';
+      for(const key of ['van','truck','carreta']){
+        const mm = getParams(key);
+        const km = kmT;
+        const h = horasViagem(+els.vm.value || mm.velocidadePadrao); // usa mesma VM para simplificar análise
+        const fixoH = mm.totalFixosMes / mm.horasProdMes;
+        const fixoV = fixoH * h;
+        const varV = km * mm.totalVarKm;
+        const pedV = km * (+els.pedKm.value || mm.pedagioKm);
+        const grisV = gris(vMerc, (+els.gris.value || (mm.grisPct*100))/100);
+        const tot = varV + pedV + grisV + fixoV;
+        els.tbodyComp.insertAdjacentHTML('beforeend',
+          `<tr><td>${mm.nome}</td><td class="text-end">${BRL(tot/km)}</td><td class="text-end">${BRL(tot)}</td><td class="text-end">${BRL(tot/(+els.peso.value||1))}</td><td class="text-end">${NUM(mm.capacidadeKg)} kg</td></tr>`);
+      }
+
+      // Cotações de prestadores (para o modal atual)
+      els.quotes.innerHTML = '';
+      const baseTotal = total;
+      PRESTADORES[modalAtual].forEach(p => {
+        const grisPrest = Math.max(vMerc * p.grisPct, p.grisMin);
+        const subtotal = (varViagem + pedTotal + fixoViagem) * (1 + p.margem);
+        const totalPrest = subtotal + grisPrest;
+        els.quotes.insertAdjacentHTML('beforeend', `
+          <div class="col-lg-6">
+            <div class="border rounded-3 p-3 h-100">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <strong>${p.nome}</strong>
+                <span class="badge bg-primary">margem ${(p.margem*100).toFixed(0)}%</span>
+              </div>
+              <div class="small-note mb-2">GRIS: ${(p.grisPct*100).toFixed(2)}% (mín. ${BRL(p.grisMin)})</div>
+              <table class="table table-sm">
+                <tbody>
+                  <tr><td>Base (fixos+variáveis+pedágios)</td><td class="text-end">${BRL(varViagem + pedTotal + fixoViagem)}</td></tr>
+                  <tr><td>+ Margem operacional</td><td class="text-end">${BRL((varViagem + pedTotal + fixoViagem)*p.margem)}</td></tr>
+                  <tr><td>+ GRIS do prestador</td><td class="text-end">${BRL(grisPrest)}</td></tr>
+                  <tr class="table-light"><th>Total cotado</th><th class="text-end">${BRL(totalPrest)}</th></tr>
+                </tbody>
+              </table>
+              <div class="small-note">Diferença para custo técnico: ${BRL(totalPrest - baseTotal)}.</div>
+            </div>
+          </div>
+        `);
+      });
+
+      // Sensibilidade (range)
+      const dist = +els.rDist.value || (+els.km.value||0);
+      els.rDistVal.textContent = `${dist} km`;
+      const kmSens = dist * (1 + (+els.ret.value||0)/100);
+      const pedSens = kmSens * (+els.pedKm.value || 0);
+      const hSens = (kmSens / (+els.vm.value||m.velocidadePadrao)) + (+els.doca.value||0);
+      const fixSens = (m.totalFixosMes / m.horasProdMes) * hSens;
+      const varSens = kmSens * m.totalVarKm;
+      const totSens = varSens + pedSens + fixSens + vGris;
+      els.sensTotal.textContent = BRL(totSens);
+      els.sensKm.textContent = BRL(totSens / kmSens);
+    }
+
+    // Navegação stepper
+    els.bubbles.forEach((b,i)=>{
+      b.addEventListener('click', ()=>{
+        els.steps.forEach(s=>s.classList.remove('show'));
+        els.steps[i].classList.add('show');
+        els.bubbles.forEach(bb=>bb.classList.remove('active'));
+        b.classList.add('active');
+        const pct = (i/(els.steps.length-1))*100;
+        els.bar.style.width = pct + '%';
+      });
+    });
+
+    // Inputs
+    ['km','ret','doca','vm','peso','valor','pedKm','gris'].forEach(id=>{
+      els[id].addEventListener('input', e=>{
+        e.target.dataset.userTouched = true;
+        render();
+      });
+    });
+    els.radios.forEach(r=>r.addEventListener('change', e=>{
+      modalAtual = e.target.value;
+      // reset flags para usar defaults do modal ao trocar
+      ['vm','pedKm','gris'].forEach(k=>delete els[k].dataset.userTouched);
+      render();
+    }));
+    els.rDist.addEventListener('input', render);
+
+    // Boot
+    document.getElementById('y').textContent = new Date().getFullYear();
+    render();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
 
