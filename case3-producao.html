@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>🏭 Case 4 — Custos de Produção (5 SKUs, rateio Tradicional x ABC)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <style>
+    :root{
+      --brand:#7c3aed; --soft:#faf5ff; --ink:#0f172a; --ok:#10b981;
+    }
+    body{ background:linear-gradient(180deg,var(--soft) 0%, #ffffff 60%); color:var(--ink) }
+    .hero{ background:radial-gradient(70% 70% at 50% 20%, #ede9fe 0%, #fff 70%); border-bottom:1px solid #e5e7eb; padding-block:1.1rem .5rem }
+    .badge-soft{ background:#ede9fe; color:#5b21b6 }
+    .card{ border-radius:1rem; box-shadow:0 10px 25px rgba(0,0,0,.06) }
+    .step{ display:none; opacity:0; transition:opacity .25s ease; margin-top:1rem }
+    .step.show{ display:block; opacity:1 }
+    .step-index{ width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700 }
+    .step-index.active{ background:var(--brand); color:#fff }
+    .progress{ height:8px }
+    .pill{ display:inline-block; border-radius:999px; padding:.35rem .75rem; background:#f1f5f9 }
+    .formula{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Courier New", monospace; background:#f8fafc; border-radius:.5rem; padding:.75rem }
+    .kpi{ border-left:6px solid var(--brand); padding-left:1rem }
+    .kpi .value{ font-size:1.35rem; font-weight:800; color:#111827 }
+    .small-note{ color:#64748b; font-size:.92rem }
+    .table-sm th, .table-sm td{ vertical-align:middle }
+    .btn-toggle .btn{ border-radius:.75rem }
+    .btn-toggle .btn-check:checked + .btn{ background:var(--brand); border-color:var(--brand); color:#fff }
+    .input-mini{ max-width:120px }
+    .row-recipe{ display:none }
+    .row-recipe.show{ display:table-row }
+    .badge-driver{ background:#eef2ff; color:#3730a3; font-weight:600 }
+    .muted{ color:#6b7280 }
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <nav class="navbar navbar-expand-lg bg-white sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">UC7 — Custos Logísticos</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="container">
+      <div class="row align-items-center g-4">
+        <div class="col-md-7">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="pill">🏭 Case 4</span>
+            <span class="badge badge-soft">Produção — 5 SKUs</span>
+            <span class="pill">Tradicional x ABC</span>
+          </div>
+          <h1 class="h4 mb-2">Custos de Produção — 5 SKUs (dois com a mesma matéria-prima), CIF, depreciação e rateios</h1>
+          <p class="mb-0 text-secondary">Ajuste matérias-primas, receitas, volumes e tempos; compare o custo unitário por SKU usando <strong>rateio único</strong> (HM/MOD) e <strong>ABC</strong> (setups, lotes, HM, MOD, movimentações). Tudo explicadinho nas caixas de <em>Fórmulas</em> 👇</p>
+        </div>
+        <div class="col-md-5">
+          <div class="card p-3">
+            <div class="progress mb-2"><div class="progress-bar bg-primary" id="bar" role="progressbar" style="width:0%"></div></div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="step-index active" id="bubble-0">1</span>
+              <span class="step-index" id="bubble-1">2</span>
+              <span class="step-index" id="bubble-2">3</span>
+              <span class="step-index" id="bubble-3">4</span>
+              <span class="step-index" id="bubble-4">5</span>
+              <span class="step-index" id="bubble-5">6</span>
+              <span class="step-index" id="bubble-6">7</span>
+              <span class="step-index" id="bubble-7">8</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- STEP 0: método, MOD e depreciação -->
+    <section class="step show" id="step-0">
+      <div class="card p-4">
+        <h2 class="h5">🎯 Método de custeio, MOD e depreciação</h2>
+        <div class="row g-4">
+          <div class="col-lg-6">
+            <div class="btn-toggle d-grid gap-2">
+              <div class="fw-semibold">Método de rateio de CIF</div>
+              <input class="btn-check" type="radio" name="met" id="met-trad" value="trad" checked>
+              <label class="btn btn-outline-primary" for="met-trad">Tradicional — um único critério (HM ou MOD)</label>
+              <div class="d-flex align-items-center gap-2 ms-2 mt-1">
+                <select id="crit-trad" class="form-select input-mini">
+                  <option value="hm" selected>Horas-máquina</option>
+                  <option value="modh">Horas MOD</option>
+                </select>
+                <span class="small-note">Critério que distribuirá <em>todo</em> o CIF no Tradicional</span>
+              </div>
+
+              <input class="btn-check" type="radio" name="met" id="met-abc" value="abc">
+              <label class="btn btn-outline-primary" for="met-abc">ABC — drivers por centro (HM, setups, lotes, MOD, movs)</label>
+            </div>
+
+            <hr/>
+            <div class="row g-2">
+              <div class="col-6">
+                <label class="form-label">Custo hora MOD (R$)</label>
+                <input type="number" class="form-control" id="modHora" step=".10" value="18.00">
+              </div>
+              <div class="col-6">
+                <label class="form-label">Dias úteis/mês</label>
+                <input type="number" class="form-control" id="diasMes" step="1" value="22">
+              </div>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+            <div class="border rounded-3 p-3">
+              <div class="fw-semibold mb-2">🧮 Depreciação de equipamentos (entra no centro "Produção (máquinas)")</div>
+              <div class="row g-2">
+                <div class="col-6">
+                  <label class="form-label">Valor de aquisição (R$)</label>
+                  <input type="number" class="form-control" id="depValor" step="1000" value="300000">
+                </div>
+                <div class="col-3">
+                  <label class="form-label">Vida (anos)</label>
+                  <input type="number" class="form-control" id="depVida" step="1" value="10">
+                </div>
+                <div class="col-3">
+                  <label class="form-label">Residual (R$)</label>
+                  <input type="number" class="form-control" id="depRes" step="500" value="0">
+                </div>
+              </div>
+              <div class="small-note mt-2" id="depInfo"></div>
+              <div class="formula mt-2">Fórmula: <strong>Depreciação mensal</strong> = (Valor − Residual) ÷ (Vida × 12).</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 1: Matérias-primas (preços) -->
+    <section class="step" id="step-1">
+      <div class="card p-4">
+        <h2 class="h5">🧴 Matérias-primas — preços (R$/kg)</h2>
+        <p class="small-note">💡 Os SKUs <strong>Balm 10g</strong> e <strong>Balm 15g</strong> compartilham a <strong>Resina A</strong>. Alterar o preço dela afeta os dois.</p>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead><tr><th>MP</th><th class="text-end">R$/kg</th></tr></thead>
+            <tbody id="tbodyMP"></tbody>
+          </table>
+        </div>
+        <div class="formula mt-2">Fórmula: custo MP por unidade = (gramas/un ÷ 1000) × preço/kg.</div>
+      </div>
+    </section>
+
+    <!-- STEP 2: Receitas + volumes/tempos -->
+    <section class="step" id="step-2">
+      <div class="card p-4">
+        <h2 class="h5">📦 Receitas por SKU + volumes e tempos</h2>
+        <p class="small-note">Clique em <em>Receita</em> para abrir/editar gramas por MP. O DM R$/un é calculado automaticamente (inclui embalagem 🎁).</p>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle" id="tabSkus">
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th class="text-end">Unid./mês</th>
+                <th class="text-end">Lote (un)</th>
+                <th class="text-end">DM R$/un</th>
+                <th class="text-end">MOD min/un</th>
+                <th class="text-end">HM min/un</th>
+                <th class="text-end">Preço R$/un</th>
+                <th class="text-end">Emb. R$/un</th>
+                <th class="text-end">Receita</th>
+              </tr>
+            </thead>
+            <tbody id="tbodySkus"></tbody>
+          </table>
+        </div>
+        <div class="formula mt-2">
+          Lotes = ceil(Unid./mês ÷ Lote); Setups = Lotes; Movimentações = 2×Lotes;<br>
+          MOD(h) = Unid.×(MOD min/un) ÷ 60; HM(h) = Unid.×(HM min/un) ÷ 60.
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 3: Centros de custos (mensais) -->
+    <section class="step" id="step-3">
+      <div class="card p-4">
+        <h2 class="h5">🏢 Centros de custos (CIF mensal)</h2>
+        <div class="row g-3">
+          <div class="col-lg-7">
+            <table class="table table-sm align-middle">
+              <thead><tr><th>Centro</th><th>Driver</th><th class="text-end">R$ / mês</th></tr></thead>
+              <tbody id="tbodyCentros"></tbody>
+              <tfoot><tr class="table-light"><th colspan="2">Total CIF mensal</th><th class="text-end" id="tCif"></th></tr></tfoot>
+            </table>
+          </div>
+          <div class="col-lg-5">
+            <div class="formula">
+              Drivers (ABC):<br>
+              • Produção (máquinas) → HM; • Setup → Setups; • Qualidade → Lotes;<br>
+              • Almox → Movs; • Manutenção → HM; • Administração → MOD(h).
+            </div>
+            <div class="small-note mt-2">No Tradicional, o <em>total</em> do CIF acima é rateado por um único critério (HM ou MOD).</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 4: Direcionadores totais -->
+    <section class="step" id="step-4">
+      <div class="card p-4">
+        <h2 class="h5">🧭 Direcionadores — totais do mês</h2>
+        <div class="row g-3">
+          <div class="col-lg-7">
+            <table class="table table-sm">
+              <tbody>
+                <tr><td>Horas-máquina (HM)</td><td class="text-end" id="totHM"></td></tr>
+                <tr><td>Horas MOD</td><td class="text-end" id="totMOD"></td></tr>
+                <tr><td>Lotes (inspeções)</td><td class="text-end" id="totLotes"></td></tr>
+                <tr><td>Setups</td><td class="text-end" id="totSetups"></td></tr>
+                <tr><td>Movimentações</td><td class="text-end" id="totMovs"></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-lg-5">
+            <div class="formula">
+              Todos os drivers são calculados com os volumes e tempos dos SKUs (ver Passo 2).<br>
+              Esses totais alimentam as tarifas do ABC: Tarifa_centro = Custo_centro ÷ ΣDriver_centro.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 5: Tradicional -->
+    <section class="step" id="step-5">
+      <div class="card p-4">
+        <h2 class="h5">📐 Rateio Tradicional (um critério)</h2>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead><tr><th>SKU</th><th class="text-end">Base do critério</th><th class="text-end">CIF alocado (R$)</th><th class="text-end">CIF R$/un</th></tr></thead>
+            <tbody id="tbodyTrad"></tbody>
+            <tfoot><tr class="table-light"><th colspan="2">CIF total alocado</th><th class="text-end" id="tradCifAlocado"></th><th></th></tr></tfoot>
+          </table>
+        </div>
+        <div class="formula mt-2">
+          BaseSKU = HM(h) <em>ou</em> MOD(h) • CIF_SKU = CIF_Total × (BaseSKU ÷ ΣBase) • CIF R$/un = CIF_SKU ÷ Unid.
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 6: ABC -->
+    <section class="step" id="step-6">
+      <div class="card p-4">
+        <h2 class="h5">🧪 ABC (multi-drivers)</h2>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead><tr><th>SKU</th><th class="text-end">Produção(HM)</th><th class="text-end">Setup</th><th class="text-end">Qualidade</th><th class="text-end">Almox</th><th class="text-end">Manut.</th><th class="text-end">Admin</th><th class="text-end">CIF total (R$)</th><th class="text-end">CIF R$/un</th></tr></thead>
+            <tbody id="tbodyABC"></tbody>
+            <tfoot><tr class="table-light"><th colspan="7">CIF total alocado (ABC)</th><th class="text-end" id="abcCifAlocado"></th><th></th></tr></tfoot>
+          </table>
+        </div>
+        <div class="formula mt-2">
+          Para cada centro: Tarifa = Custo ÷ ΣDriver. Para cada SKU: CIF_SKU = Σ(Tarifa × ConsumoSKU). CIF R$/un = CIF_SKU ÷ Unid.
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 7: Custo unitário + margem -->
+    <section class="step" id="step-7">
+      <div class="card p-4">
+        <h2 class="h5">📊 Custo unitário por SKU + margem</h2>
+        <p class="small-note">Usamos o método atualmente selecionado (Tradicional ou ABC) para o componente <strong>CIF R$/un</strong>.</p>
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead><tr><th>SKU</th><th class="text-end">DM R$/un</th><th class="text-end">MOD R$/un</th><th class="text-end">CIF R$/un</th><th class="text-end">Custo total</th><th class="text-end">Preço</th><th class="text-end">Margem %</th></tr></thead>
+            <tbody id="tbodyUnit"></tbody>
+          </table>
+        </div>
+        <div class="row g-3">
+          <div class="col-lg-4">
+            <div class="kpi"><div class="text-muted">CIF total (mês) — método atual</div><div class="value" id="kCifMetodo">–</div></div>
+          </div>
+          <div class="col-lg-4">
+            <div class="kpi"><div class="text-muted">Custo médio ponderado</div><div class="value" id="kCustoMedio">–</div></div>
+          </div>
+          <div class="col-lg-4">
+            <div class="kpi"><div class="text-muted">Margem média ponderada</div><div class="value" id="kMargem">–</div></div>
+          </div>
+        </div>
+        <details class="mt-3">
+          <summary class="fw-semibold">📘 Fórmulas deste passo</summary>
+          <div class="formula mt-2">
+            DM R$/un = Σ[(g/un ÷ 1000) × R$/kg] + Emb./un • MOD R$/un = (MOD min/un ÷ 60) × R$/h MOD • Custo total = DM + MOD + CIF • Margem % = (Preço − Custo) ÷ Preço × 100
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- STEP 8: Sensibilidade -->
+    <section class="step" id="step-8">
+      <div class="card p-4">
+        <h2 class="h5">🎚️ Sensibilidade — preço da MP compartilhada & tamanho de lote</h2>
+        <div class="row g-3">
+          <div class="col-lg-6">
+            <div class="border rounded-3 p-3">
+              <div class="fw-semibold mb-2">Preço da Resina A (R$/kg) — afeta Balm 10g e 15g</div>
+              <input type="range" class="form-range" min="20" max="70" step="1" id="sensPrecoA"/>
+              <div class="small d-flex justify-content-between"><span>R$ 20</span><span id="sensPrecoAVal">—</span><span>R$ 70</span></div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="border rounded-3 p-3">
+              <div class="fw-semibold mb-2">Tamanho de lote (por SKU)</div>
+              <select id="sensSku" class="form-select mb-2"></select>
+              <input type="range" class="form-range" min="100" max="2000" step="20" id="sensLote"/>
+              <div class="small d-flex justify-content-between"><span>100</span><span id="sensLoteVal">—</span><span>2000</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="row g-3 mt-2">
+          <div class="col-lg-6">
+            <div class="kpi"><div class="text-muted">CIF R$/un (SKU da sensibilidade)</div><div class="value" id="sensCIF">–</div></div>
+          </div>
+          <div class="col-lg-6">
+            <div class="kpi"><div class="text-muted">Custo total R$/un (SKU da sensibilidade)</div><div class="value" id="sensTotal">–</div></div>
+          </div>
+        </div>
+        <hr/>
+        <ul class="mb-0">
+          <li>🔗 SKUs que compartilham MP têm custos fortemente correlacionados — negocie preços por volume total do grupo.</li>
+          <li>🛠️ Lotes pequenos aumentam setups/inspeções → CIF/ABC sobe; agrupe SKUs compatíveis quando possível.</li>
+          <li>🏷️ Se usar Tradicional, verifique se o critério (HM ou MOD) não distorce produtos leves/pesados em máquina.</li>
+        </ul>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="py-4 border-top">
+    <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <span>© <span id="y"></span> UC7 — Custos Logísticos</span>
+      <a class="text-decoration-none" href="index.html">Voltar</a>
+    </div>
+  </footer>
+
+  <script>
+    // ========= Helpers
+    const BRL = v => (isFinite(v)? v:0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+    const NUM = v => (isFinite(v)? v:0).toLocaleString('pt-BR',{maximumFractionDigits:2});
+    const ceil = Math.ceil;
+
+    // ========= Estado inicial
+    const state = {
+      metodo: 'trad',      // 'trad' | 'abc'
+      critTrad: 'hm',      // 'hm' | 'modh'
+      modHora: 18,
+      diasMes: 22,
+      deprec: {valor:300000, vida:10, residual:0},
+
+      // MPs (R$/kg)
+      mps: [
+        {id:'A', nome:'Resina A (compartilhada)', preco:32},
+        {id:'B', nome:'Essência Floral', preco:55},
+        {id:'C', nome:'Argila Cosmética', preco:8},
+        {id:'D', nome:'Óleo Essencial Cítrico', preco:110},
+        {id:'E', nome:'Base Vegetal', preco:14}
+      ],
+
+      // SKUs: receitas em gramas por unidade + embalagem (R$/un)
+      skus: [
+        {id:'S1', nome:'Balm Labial 10g', unMes:6000, lote:600, preco:8.90, emb:0.70, modMin:1.8, hmMin:0.8,
+         rec:{A:8.0, D:0.5}}, // compartilha A
+        {id:'S2', nome:'Balm Labial 15g', unMes:4000, lote:400, preco:11.90, emb:0.75, modMin:2.0, hmMin:1.0,
+         rec:{A:12.0, D:0.7}}, // compartilha A
+        {id:'S3', nome:'Sabonete 100g', unMes:9000, lote:900, preco:6.90, emb:0.50, modMin:2.6, hmMin:1.3,
+         rec:{E:95.0, B:1.0, C:4.0}},
+        {id:'S4', nome:'Shampoo Sólido 90g', unMes:5000, lote:500, preco:15.90, emb:0.60, modMin:4.2, hmMin:2.1,
+         rec:{E:80.0, C:10.0, B:0.5}},
+        {id:'S5', nome:'Condicionador 80g', unMes:3800, lote:380, preco:16.90, emb:0.65, modMin:5.0, hmMin:2.3,
+         rec:{E:70.0, C:9.0, B:0.5, D:0.2}}
+      ],
+
+      // Centros (CIF/mês) — produção recebe depreciação somada
+      centros: [
+        {id:'prod',   nome:'Produção (máquinas)', driver:'hm',   custo:0},   // base + deprec
+        {id:'setup',  nome:'Setup & Trocas',      driver:'setups', custo:8000},
+        {id:'qa',     nome:'Qualidade',           driver:'lotes',  custo:5000},
+        {id:'almox',  nome:'Almox & Movimentação',driver:'movs',   custo:6500},
+        {id:'man',    nome:'Manutenção',          driver:'hm',     custo:5500},
+        {id:'adm',    nome:'Administração Fabril',driver:'modh',   custo:9000}
+      ],
+      prodBaseMensal: 22000 // energia etc., sem deprec
+    };
+
+    // ========= DOM refs
+    const els = {
+      bar: document.getElementById('bar'),
+      bubbles: [...document.querySelectorAll('.step-index')],
+      steps: [...document.querySelectorAll('.step')],
+      // método/deprec
+      metTrad: document.getElementById('met-trad'),
+      metABC: document.getElementById('met-abc'),
+      critTrad: document.getElementById('crit-trad'),
+      modHora: document.getElementById('modHora'),
+      diasMes: document.getElementById('diasMes'),
+      depValor: document.getElementById('depValor'),
+      depVida: document.getElementById('depVida'),
+      depRes: document.getElementById('depRes'),
+      depInfo: document.getElementById('depInfo'),
+      // MPs
+      tbodyMP: document.getElementById('tbodyMP'),
+      // SKUs
+      tbodySkus: document.getElementById('tbodySkus'),
+      // Centros
+      tbodyCentros: document.getElementById('tbodyCentros'),
+      tCif: document.getElementById('tCif'),
+      // Drivers totais
+      totHM: document.getElementById('totHM'),
+      totMOD: document.getElementById('totMOD'),
+      totLotes: document.getElementById('totLotes'),
+      totSetups: document.getElementById('totSetups'),
+      totMovs: document.getElementById('totMovs'),
+      // Tradicional
+      tbodyTrad: document.getElementById('tbodyTrad'),
+      tradCifAlocado: document.getElementById('tradCifAlocado'),
+      // ABC
+      tbodyABC: document.getElementById('tbodyABC'),
+      abcCifAlocado: document.getElementById('abcCifAlocado'),
+      // Unitário
+      tbodyUnit: document.getElementById('tbodyUnit'),
+      kCifMetodo: document.getElementById('kCifMetodo'),
+      kCustoMedio: document.getElementById('kCustoMedio'),
+      kMargem: document.getElementById('kMargem'),
+      // Sensibilidade
+      sensPrecoA: document.getElementById('sensPrecoA'),
+      sensPrecoAVal: document.getElementById('sensPrecoAVal'),
+      sensSku: document.getElementById('sensSku'),
+      sensLote: document.getElementById('sensLote'),
+      sensLoteVal: document.getElementById('sensLoteVal'),
+      sensCIF: document.getElementById('sensCIF'),
+      sensTotal: document.getElementById('sensTotal')
+    };
+
+    // ========= Util
+    const mpPreco = id => (state.mps.find(m=>m.id===id)||{preco:0}).preco;
+
+    function dmUnit(sku){
+      let total = sku.emb || 0;
+      for(const [mp,gramas] of Object.entries(sku.rec)){
+        total += (gramas/1000) * mpPreco(mp);
+      }
+      return total;
+    }
+
+    function deprecMensal(){
+      const {valor, vida, residual} = state.deprec;
+      return Math.max((valor - residual) / (vida*12), 0);
+    }
+
+    function recomputaCentros(){
+      const prod = state.centros.find(c=>c.id==='prod');
+      prod.custo = state.prodBaseMensal + deprecMensal();
+    }
+
+    function lotesSKU(s){ return Math.max(1, Math.ceil(s.unMes / s.lote)); }
+    function driversSKU(s){
+      const lotes = lotesSKU(s);
+      const setups = lotes;
+      const movs = lotes*2;
+      const modh = (s.unMes * s.modMin)/60;
+      const hmh  = (s.unMes * s.hmMin)/60;
+      return {lotes, setups, movs, modh, hmh};
+    }
+
+    function driversTotais(){
+      let HM=0, MOD=0, LOTES=0, SETUPS=0, MOVS=0;
+      for(const s of state.skus){
+        const d = driversSKU(s);
+        HM += d.hmh; MOD += d.modh; LOTES += d.lotes; SETUPS += d.setups; MOVS += d.movs;
+      }
+      return {HM, MOD, LOTES, SETUPS, MOVS};
+    }
+
+    function totalCIFMensal(){
+      return state.centros.reduce((a,b)=>a+b.custo,0);
+    }
+
+    // ========= Render MPs
+    function renderMPs(){
+      els.tbodyMP.innerHTML = '';
+      state.mps.forEach(mp=>{
+        els.tbodyMP.insertAdjacentHTML('beforeend',
+          `<tr>
+            <td>${mp.nome}</td>
+            <td class="text-end"><input type="number" step=".10" class="form-control form-control-sm text-end input-mini" value="${mp.preco}" data-mp="${mp.id}"></td>
+          </tr>`
+        );
+      });
+      // listeners
+      [...els.tbodyMP.querySelectorAll('input[data-mp]')].forEach(inp=>{
+        inp.addEventListener('input', e=>{
+          const id = e.target.dataset.mp;
+          const m = state.mps.find(x=>x.id===id);
+          m.preco = +e.target.value || 0;
+          renderAll();
+        });
+      });
+    }
+
+    // ========= Render SKUs tabela + receitas editáveis
+    function renderSkus(){
+      els.tbodySkus.innerHTML = '';
+      state.skus.forEach(s=>{
+        const dm = dmUnit(s);
+        els.tbodySkus.insertAdjacentHTML('beforeend', `
+          <tr>
+            <td><input class="form-control form-control-sm" value="${s.nome}" data-sku="${s.id}" data-k="nome"></td>
+            <td class="text-end"><input type="number" class="form-control form-control-sm text-end" step="10" value="${s.unMes}" data-sku="${s.id}" data-k="unMes"></td>
+            <td class="text-end"><input type="number" class="form-control form-control-sm text-end" step="10" value="${s.lote}" data-sku="${s.id}" data-k="lote"></td>
+            <td class="text-end fw-semibold" id="dm-${s.id}">${BRL(dm)}</td>
+            <td class="text-end"><input type="number" class="form-control form-control-sm text-end" step=".1" value="${s.modMin}" data-sku="${s.id}" data-k="modMin"></td>
+            <td class="text-end"><input type="number" class="form-control form-control-sm text-end" step=".1" value="${s.hmMin}" data-sku="${s.id}" data-k="hmMin"></td>
+            <td class="text-end"><input type="number" class="form-control form-control-sm text-end" step=".01" value="${s.preco}" data-sku="${s.id}" data-k="preco"></td>
+            <td class="text-end"><input type="number" class="form-control form-control-sm text-end" step=".01" value="${s.emb}" data-sku="${s.id}" data-k="emb"></td>
+            <td class="text-end"><button class="btn btn-sm btn-outline-primary" data-toggle-recipe="${s.id}">Receita</button></td>
+          </tr>
+          <tr class="row-recipe" id="recipe-${s.id}">
+            <td colspan="9">
+              <div class="row g-2 align-items-center">
+                ${Object.keys(s.rec).map(mp=>{
+                  const grams = s.rec[mp];
+                  const nome = (state.mps.find(x=>x.id===mp)||{}).nome || mp;
+                  return `
+                    <div class="col-md-3">
+                      <label class="form-label small">${nome} (g/un)</label>
+                      <input type="number" step=".1" class="form-control form-control-sm" value="${grams}" data-sku="${s.id}" data-mpgram="${mp}">
+                    </div>`;
+                }).join('')}
+              </div>
+              <div class="small-note mt-1">DM inclui embalagem. Para adicionar/remover MPs, edite no código (bloco <em>state.skus[].rec</em>).</div>
+            </td>
+          </tr>
+        `);
+      });
+
+      // listeners campos sku
+      [...els.tbodySkus.querySelectorAll('input[data-sku][data-k]')].forEach(inp=>{
+        inp.addEventListener('input', e=>{
+          const id = e.target.dataset.sku;
+          const k = e.target.dataset.k;
+          const s = state.skus.find(x=>x.id===id);
+          s[k] = (k==='nome') ? e.target.value : (+e.target.value || 0);
+          renderAll();
+        });
+      });
+      // listeners receita
+      [...els.tbodySkus.querySelectorAll('input[data-mpgram]')].forEach(inp=>{
+        inp.addEventListener('input', e=>{
+          const id = e.target.dataset.sku;
+          const mp = e.target.dataset.mpgram;
+          const s = state.skus.find(x=>x.id===id);
+          s.rec[mp] = +e.target.value || 0;
+          document.getElementById('dm-'+id).textContent = BRL(dmUnit(s));
+          renderAll();
+        });
+      });
+      // toggle receita
+      [...els.tbodySkus.querySelectorAll('button[data-toggle-recipe]')].forEach(btn=>{
+        btn.addEventListener('click', e=>{
+          const id = e.target.dataset.toggleRecipe;
+          document.getElementById('recipe-'+id).classList.toggle('show');
+        });
+      });
+    }
+
+    // ========= Render Centros
+    function renderCentros(){
+      recomputaCentros();
+      els.tbodyCentros.innerHTML = '';
+      let total = 0;
+      state.centros.forEach(c=>{
+        total += c.custo;
+        els.tbodyCentros.insertAdjacentHTML('beforeend', `
+          <tr>
+            <td>${c.nome}</td>
+            <td><span class="badge badge-driver">${c.driver}</span></td>
+            <td class="text-end"><input type="number" step="50" class="form-control form-control-sm text-end input-mini" value="${c.custo}" data-centro="${c.id}"></td>
+          </tr>
+        `);
+      });
+      els.tCif.textContent = BRL(total);
+      // listeners
+      [...els.tbodyCentros.querySelectorAll('input[data-centro]')].forEach(inp=>{
+        inp.addEventListener('input', e=>{
+          const id = e.target.dataset.centro;
+          const c = state.centros.find(x=>x.id===id);
+          c.custo = +e.target.value || 0;
+          renderAll();
+        });
+      });
+    }
+
+    // ========= Render Drivers totais
+    function renderDrivers(){
+      const d = driversTotais();
+      els.totHM.textContent = NUM(d.HM)+' h';
+      els.totMOD.textContent = NUM(d.MOD)+' h';
+      els.totLotes.textContent = NUM(d.LOTES);
+      els.totSetups.textContent = NUM(d.SETUPS);
+      els.totMovs.textContent = NUM(d.MOVS);
+      return d;
+    }
+
+    // ========= Tradicional
+    function alocTradicional(){
+      const base = state.critTrad; // 'hm' | 'modh'
+      const total = totalCIFMensal();
+      let somaBase = 0; const part = {};
+      state.skus.forEach(s=>{
+        const d = driversSKU(s);
+        const b = (base==='hm') ? d.hmh : d.modh;
+        part[s.id] = b; somaBase += b;
+      });
+      let totalAlocado=0; const linhas=[];
+      state.skus.forEach(s=>{
+        const share = somaBase>0 ? part[s.id]/somaBase : 0;
+        const cif = total*share;
+        totalAlocado += cif;
+        linhas.push({id:s.id, base:part[s.id], cif, cifUnit:(s.unMes>0?cif/s.unMes:0)});
+      });
+      return {linhas, totalAlocado, base};
+    }
+    function renderTrad(){
+      const r = alocTradicional();
+      els.tbodyTrad.innerHTML = '';
+      r.linhas.forEach(l=>{
+        const s = state.skus.find(x=>x.id===l.id);
+        els.tbodyTrad.insertAdjacentHTML('beforeend', `
+          <tr><td>${s.nome}</td><td class="text-end">${NUM(l.base)}</td><td class="text-end">${BRL(l.cif)}</td><td class="text-end">${BRL(l.cifUnit)}</td></tr>
+        `);
+      });
+      els.tradCifAlocado.textContent = BRL(r.totalAlocado);
+    }
+
+    // ========= ABC
+    function alocABC(){
+      const d = driversTotais();
+      const drivers = {
+        prod:{tot:d.HM,    map:s=>driversSKU(s).hmh},
+        setup:{tot:d.SETUPS,map:s=>driversSKU(s).setups},
+        qa:{tot:d.LOTES,   map:s=>driversSKU(s).lotes},
+        almox:{tot:d.MOVS, map:s=>driversSKU(s).movs},
+        man:{tot:d.HM,     map:s=>driversSKU(s).hmh},
+        adm:{tot:d.MOD,    map:s=>driversSKU(s).modh}
+      };
+      const res = {}; let totalAlocado=0;
+      state.skus.forEach(s=>{ res[s.id]={prod:0,setup:0,qa:0,almox:0,man:0,adm:0,total:0,unit:0}; });
+      state.centros.forEach(c=>{
+        const drv = drivers[c.id]; const tot = drv?.tot||0;
+        state.skus.forEach(s=>{
+          const cons = drv? drv.map(s):0;
+          const parcela = tot>0 ? c.custo*(cons/tot) : 0;
+          res[s.id][c.id]+=parcela;
+        });
+      });
+      state.skus.forEach(s=>{
+        const r = res[s.id];
+        r.total = r.prod+r.setup+r.qa+r.almox+r.man+r.adm;
+        r.unit = (s.unMes>0? r.total/s.unMes:0);
+        totalAlocado += r.total;
+      });
+      return {res, totalAlocado};
+    }
+    function renderABC(){
+      const r = alocABC();
+      els.tbodyABC.innerHTML = '';
+      state.skus.forEach(s=>{
+        const a = r.res[s.id];
+        els.tbodyABC.insertAdjacentHTML('beforeend', `
+          <tr>
+            <td>${s.nome}</td>
+            <td class="text-end">${BRL(a.prod)}</td>
+            <td class="text-end">${BRL(a.setup)}</td>
+            <td class="text-end">${BRL(a.qa)}</td>
+            <td class="text-end">${BRL(a.almox)}</td>
+            <td class="text-end">${BRL(a.man)}</td>
+            <td class="text-end">${BRL(a.adm)}</td>
+            <td class="text-end">${BRL(a.total)}</td>
+            <td class="text-end">${BRL(a.unit)}</td>
+          </tr>
+        `);
+      });
+      els.abcCifAlocado.textContent = BRL(r.totalAlocado);
+    }
+
+    // ========= Unitário + KPIs
+    function custoUnitarioAtual(){
+      const map={}, cifUnit={};
+      let totalCIFMetodo=0, totalUn=0, somaCusto=0, somaReceita=0;
+      if(state.metodo==='trad'){
+        const r = alocTradicional();
+        r.linhas.forEach(l=>{ cifUnit[l.id]=l.cifUnit; totalCIFMetodo+=l.cif; });
+      }else{
+        const r = alocABC();
+        state.skus.forEach(s=>{ cifUnit[s.id]=r.res[s.id].unit; });
+        totalCIFMetodo = r.totalAlocado;
+      }
+      state.skus.forEach(s=>{
+        const dm = dmUnit(s);
+        const mod = (s.modMin/60)*state.modHora;
+        const cif = cifUnit[s.id]||0;
+        const total = dm+mod+cif;
+        map[s.id]={dm,mod,cif,total,preco:s.preco};
+        totalUn += s.unMes;
+        somaCusto += total*s.unMes;
+        somaReceita += s.preco*s.unMes;
+      });
+      return {map, totalCIFMetodo, custoMedio:(totalUn? somaCusto/totalUn:0), margemMedia:(somaReceita>0? (somaReceita-somaCusto)/somaReceita:0)};
+    }
+    function renderUnit(){
+      const r = custoUnitarioAtual();
+      els.tbodyUnit.innerHTML = '';
+      state.skus.forEach(s=>{
+        const u = r.map[s.id];
+        const margem = (u.preco>0? (u.preco-u.total)/u.preco:0);
+        els.tbodyUnit.insertAdjacentHTML('beforeend', `
+          <tr>
+            <td>${s.nome}</td>
+            <td class="text-end">${BRL(u.dm)}</td>
+            <td class="text-end">${BRL(u.mod)}</td>
+            <td class="text-end">${BRL(u.cif)}</td>
+            <td class="text-end fw-semibold">${BRL(u.total)}</td>
+            <td class="text-end">${BRL(u.preco)}</td>
+            <td class="text-end ${margem<0?'text-danger':'text-success'}">${(margem*100).toFixed(1)}%</td>
+          </tr>
+        `);
+      });
+      els.kCifMetodo.textContent = BRL(r.totalCIFMetodo);
+      els.kCustoMedio.textContent = BRL(r.custoMedio);
+      els.kMargem.textContent = (r.margemMedia*100).toFixed(1)+'%';
+    }
+
+    // ========= Sensibilidade
+    function populateSens(){
+      els.sensSku.innerHTML='';
+      state.skus.forEach(s=>els.sensSku.insertAdjacentHTML('beforeend', `<option value="${s.id}">${s.nome}</option>`));
+      els.sensSku.value = state.skus[0].id;
+      els.sensLote.value = state.skus[0].lote;
+      els.sensLoteVal.textContent = state.skus[0].lote+' un/lote';
+      const mpA = state.mps.find(m=>m.id==='A'); els.sensPrecoA.value = mpA.preco; els.sensPrecoAVal.textContent = BRL(mpA.preco);
+    }
+    function renderSens(){
+      // preço MP A
+      const mpA = state.mps.find(m=>m.id==='A');
+      mpA.preco = +els.sensPrecoA.value || mpA.preco;
+      els.sensPrecoAVal.textContent = BRL(mpA.preco);
+      // lote do SKU
+      const id = els.sensSku.value;
+      const sku = state.skus.find(x=>x.id===id);
+      const old = sku.lote;
+      sku.lote = +els.sensLote.value || sku.lote;
+      els.sensLoteVal.textContent = sku.lote+' un/lote';
+
+      // recalcular cif unit para o sku escolhido
+      let cifUnit=0;
+      if(state.metodo==='trad'){
+        const r = alocTradicional();
+        const row = r.linhas.find(l=>l.id===id); cifUnit = row? row.cifUnit : 0;
+      }else{
+        const r = alocABC(); cifUnit = r.res[id].unit;
+      }
+      const dm = dmUnit(sku);
+      const mod = (sku.modMin/60)*state.modHora;
+      els.sensCIF.textContent = BRL(cifUnit);
+      els.sensTotal.textContent = BRL(dm+mod+cifUnit);
+      sku.lote = old; // volta
+    }
+
+    // ========= Render all
+    function renderAll(){
+      // sync inputs
+      state.metodo = els.metABC.checked ? 'abc' : 'trad';
+      state.critTrad = els.critTrad.value;
+      state.modHora = +els.modHora.value || state.modHora;
+      state.diasMes = +els.diasMes.value || state.diasMes;
+      state.deprec.valor = +els.depValor.value || state.deprec.valor;
+      state.deprec.vida = +els.depVida.value || state.deprec.vida;
+      state.deprec.residual = +els.depRes.value || state.deprec.residual;
+
+      // depreciação
+      els.depInfo.textContent = `Depreciação mensal = ${BRL(deprecMensal())}.`;
+      renderMPs();
+      renderSkus();
+      renderCentros();
+      renderDrivers();
+      renderTrad();
+      renderABC();
+      renderUnit();
+      populateSens(); // to keep sliders in sync with current values
+      renderSens();
+    }
+
+    // ========= Listeners gerais
+    [els.metTrad, els.metABC, els.critTrad, els.modHora, els.diasMes, els.depValor, els.depVida, els.depRes].forEach(el=>{
+      el.addEventListener('input', renderAll);
+      el.addEventListener('change', renderAll);
+    });
+    els.sensPrecoA.addEventListener('input', ()=>{ renderSens(); renderUnit(); });
+    els.sensSku.addEventListener('change', renderSens);
+    els.sensLote.addEventListener('input', renderSens);
+
+    // Stepper
+    els.bubbles.forEach((b,i)=>{
+      b.addEventListener('click', ()=>{
+        els.steps.forEach(s=>s.classList.remove('show'));
+        els.steps[i].classList.add('show');
+        els.bubbles.forEach(bb=>bb.classList.remove('active'));
+        b.classList.add('active');
+        const pct = (i/(els.steps.length-1))*100;
+        els.bar.style.width = pct + '%';
+        window.scrollTo({top:0,behavior:'smooth'});
+      });
+    });
+
+    // Boot
+    document.getElementById('y').textContent = new Date().getFullYear();
+    renderAll();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
