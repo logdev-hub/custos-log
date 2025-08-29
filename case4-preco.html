@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>💲 Case 4 — Formação de Preço de Venda (markup, impostos, frete e PEQ)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <style>
+    :root{
+      --brand:#0ea5e9; --ink:#0f172a; --soft:#f0f9ff; --kpi:#7c3aed; --ok:#10b981;
+    }
+    body{ color:var(--ink); background:linear-gradient(180deg, var(--soft) 0%, #fff 60%) }
+    .hero{ background:radial-gradient(70% 80% at 50% 20%, #e0f2fe 0%, #fff 70%); border-bottom:1px solid #e5e7eb; padding-block:1.1rem .5rem }
+    .badge-soft{ background:#e0f2fe; color:#075985; }
+    .card{ border-radius:1rem; box-shadow:0 10px 25px rgba(2,6,23,.06) }
+    .step{ display:none; opacity:0; transition:opacity .25s ease; margin-top:1rem }
+    .step.show{ display:block; opacity:1 }
+    .step-index{ width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700 }
+    .step-index.active{ background:var(--kpi); color:#fff }
+    .progress{ height:8px }
+    .pill{ display:inline-block; border-radius:999px; padding:.35rem .75rem; background:#f1f5f9 }
+    .formula{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Courier New", monospace; background:#f8fafc; border-radius:.5rem; padding:.75rem }
+    .kpi{ border-left:6px solid var(--kpi); padding-left:1rem }
+    .kpi .value{ font-size:1.35rem; font-weight:800; color:#111827 }
+    .small-note{ color:#64748b; font-size:.92rem }
+    .table-sm th, .table-sm td{ vertical-align:middle }
+    .btn-toggle .btn{ border-radius:.75rem }
+    .btn-toggle .btn-check:checked + .btn{ background:var(--kpi); border-color:var(--kpi); color:#fff }
+    .input-mini{ max-width:130px }
+    .muted{ color:#6b7280 }
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <nav class="navbar navbar-expand-lg bg-white sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">UC7 — Custos Logísticos</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="container">
+      <div class="row align-items-center g-4">
+        <div class="col-md-7">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="pill">💲 Case 5</span>
+            <span class="badge badge-soft">Formação de Preço de Venda</span>
+            <span class="pill">Markup • Impostos • Frete • PEQ</span>
+          </div>
+          <h1 class="h4 mb-2">Preço de venda com base em Produção, Armazenagem e Transporte</h1>
+          <p class="mb-0 text-secondary">Defina o SKU, quantidades e políticas de frete; o sistema calcula <strong>custo unitário</strong>, <strong>custo logístico por pedido</strong>, aplica <strong>impostos/comissões/gateway</strong>, sugere preço por <strong>markup</strong> e traz o <strong>ponto de equilíbrio</strong>. Tudo explicadinho nas caixas de <em>Fórmulas</em> 👇</p>
+        </div>
+        <div class="col-md-5">
+          <div class="card p-3">
+            <div class="progress mb-2"><div class="progress-bar bg-primary" id="bar" role="progressbar" style="width:0%"></div></div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="step-index active">1</span>
+              <span class="step-index">2</span>
+              <span class="step-index">3</span>
+              <span class="step-index">4</span>
+              <span class="step-index">5</span>
+              <span class="step-index">6</span>
+              <span class="step-index">7</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- STEP 1: SKU, pedido e política de frete -->
+    <section class="step show">
+      <div class="card p-4">
+        <h2 class="h5">🎯 1) Contexto do pedido</h2>
+        <div class="row g-3">
+          <div class="col-lg-4">
+            <label class="form-label">SKU (peso em kg)</label>
+            <select id="sku" class="form-select"></select>
+            <div class="small-note mt-1">Dois balms compartilham a mesma MP (Resina A).</div>
+          </div>
+          <div class="col-6 col-lg-2">
+            <label class="form-label">Qtd. do pedido</label>
+            <input type="number" id="qtd" class="form-control" step="1" value="600">
+          </div>
+          <div class="col-6 col-lg-2">
+            <label class="form-label">Distância (km)</label>
+            <input type="number" id="km" class="form-control" step="10" value="250">
+          </div>
+          <div class="col-lg-4">
+            <label class="form-label">Política de frete</label>
+            <select id="fretePolitica" class="form-select">
+              <option value="CIF" selected>🚚 CIF — vendedor paga o frete</option>
+              <option value="FOB">📦 FOB — cliente retira/paga o frete</option>
+            </select>
+          </div>
+        </div>
+        <div class="formula mt-3">
+          Conceitos:<br>
+          • <strong>CIF</strong>: frete entra no custo e impacta o preço; <strong>FOB</strong>: desconsideramos frete no preço.<br>
+          • Cálculos são <em>por pedido</em> e depois alocados por unidade.
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 2: Custo de Produção (DM + MOD + CIF ABC) -->
+    <section class="step">
+      <div class="card p-4">
+        <h2 class="h5">🏭 2) Custo de Produção</h2>
+        <p class="small-note">Valores editáveis. A depreciação entra no centro “Produção (máquinas)”.</p>
+        <div class="row g-3">
+          <div class="col-6 col-lg-2">
+            <label class="form-label">R$/h MOD</label>
+            <input type="number" id="modHora" class="form-control" step=".10" value="18">
+          </div>
+          <div class="col-6 col-lg-2">
+            <label class="form-label">Depreciação (R$/mês)</label>
+            <input type="number" id="depMes" class="form-control" step="100" value="2500">
+          </div>
+          <div class="col-lg-8">
+            <label class="form-label">Centros (R$/mês) — ABC</label>
+            <div class="row g-2">
+              <div class="col"><div class="input-group"><span class="input-group-text">Produção(HM)</span><input type="number" class="form-control" id="cProd" value="22000"></div></div>
+              <div class="col"><div class="input-group"><span class="input-group-text">Setup</span><input type="number" class="form-control" id="cSetup" value="8000"></div></div>
+              <div class="col"><div class="input-group"><span class="input-group-text">Qualidade</span><input type="number" class="form-control" id="cQA" value="5000"></div></div>
+              <div class="col"><div class="input-group"><span class="input-group-text">Almox</span><input type="number" class="form-control" id="cAlmox" value="6500"></div></div>
+              <div class="col"><div class="input-group"><span class="input-group-text">Manut.</span><input type="number" class="form-control" id="cMan" value="5500"></div></div>
+              <div class="col"><div class="input-group"><span class="input-group-text">Admin</span><input type="number" class="form-control" id="cAdm" value="9000"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-responsive mt-3">
+          <table class="table table-sm align-middle">
+            <thead><tr><th>SKU</th><th class="text-end">DM R$/un</th><th class="text-end">MOD R$/un</th><th class="text-end">CIF ABC R$/un</th><th class="text-end">Custo fabril R$/un</th></tr></thead>
+            <tbody id="tbodyProd"></tbody>
+          </table>
+        </div>
+
+        <div class="formula mt-2">
+          Fórmulas (por unidade do SKU):<br>
+          • <strong>DM</strong> = Σ[(g/un ÷ 1000) × R$/kg] + embalagem.<br>
+          • <strong>MOD</strong> = (min/un ÷ 60) × R$/h MOD.<br>
+          • <strong>ABC</strong>: para cada centro, Tarifa = Custo_mensal ÷ ΣDriver; CIF_SKU = Σ(Tarifa × consumo do SKU); CIF R$/un = CIF_SKU ÷ unidades/mês.<br>
+          • <strong>Custo fabril</strong> = DM + MOD + CIF ABC.
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 3: Armazenagem (por pedido) -->
+    <section class="step">
+      <div class="card p-4">
+        <h2 class="h5">📦 3) Armazenagem (por pedido)</h2>
+        <div class="row g-3">
+          <div class="col-6 col-lg-3">
+            <label class="form-label">Picking R$/pedido</label>
+            <input type="number" id="pick" class="form-control" step=".10" value="8.50">
+          </div>
+          <div class="col-6 col-lg-3">
+            <label class="form-label">Embalagem expedição R$/pedido</label>
+            <input type="number" id="pack" class="form-control" step=".10" value="4.20">
+          </div>
+          <div class="col-6 col-lg-3">
+            <label class="form-label">Holding % ao mês</label>
+            <input type="number" id="holding" class="form-control" step=".1" value="1.2">
+          </div>
+          <div class="col-6 col-lg-3">
+            <label class="form-label">Dias de estoque</label>
+            <input type="number" id="diasEst" class="form-control" step="1" value="20">
+          </div>
+        </div>
+        <div class="small-note mt-2">Holding incide sobre o custo fabril unitário e é proporcional aos dias em estoque.</div>
+        <div class="formula mt-2">
+          <strong>Armazenagem por unidade</strong> = (Picking + Embalagem_exp) ÷ Qtd_pedido + Holding%×(dias/30)×Custo_fabril_un.
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 4: Transporte (duas transportadoras) -->
+    <section class="step">
+      <div class="card p-4">
+        <h2 class="h5">🚚 4) Transporte</h2>
+        <div class="row g-3">
+          <div class="col-lg-6">
+            <div class="border rounded-3 p-3">
+              <div class="fw-semibold mb-2">Transportadora A</div>
+              <div class="row g-2">
+                <div class="col-6"><label class="form-label">Base (R$)</label><input type="number" id="aBase" class="form-control" value="45"></div>
+                <div class="col-6"><label class="form-label">R$/km</label><input type="number" id="aKm" class="form-control" step=".01" value="1.80"></div>
+                <div class="col-6"><label class="form-label">R$/kg</label><input type="number" id="aKg" class="form-control" step=".01" value="0.90"></div>
+                <div class="col-6"><label class="form-label">Pedágio R$/100km</label><input type="number" id="aPed" class="form-control" step=".01" value="16"></div>
+                <div class="col-6"><label class="form-label">GRIS % (sobre custo)</label><input type="number" id="aGris" class="form-control" step=".1" value="0.3"></div>
+                <div class="col-6"><label class="form-label">Mínimo R$</label><input type="number" id="aMin" class="form-control" step="1" value="120"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="border rounded-3 p-3">
+              <div class="fw-semibold mb-2">Transportadora B</div>
+              <div class="row g-2">
+                <div class="col-6"><label class="form-label">Base (R$)</label><input type="number" id="bBase" class="form-control" value="30"></div>
+                <div class="col-6"><label class="form-label">R$/km</label><input type="number" id="bKm" class="form-control" step=".01" value="2.10"></div>
+                <div class="col-6"><label class="form-label">R$/kg</label><input type="number" id="bKg" class="form-control" step=".01" value="0.75"></div>
+                <div class="col-6"><label class="form-label">Pedágio R$/100km</label><input type="number" id="bPed" class="form-control" step=".01" value="18"></div>
+                <div class="col-6"><label class="form-label">GRIS % (sobre custo)</label><input type="number" id="bGris" class="form-control" step=".1" value="0.4"></div>
+                <div class="col-6"><label class="form-label">Mínimo R$</label><input type="number" id="bMin" class="form-control" step="1" value="140"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row g-3 mt-2">
+          <div class="col-lg-4">
+            <label class="form-label">Operador escolhido</label>
+            <select id="operador" class="form-select">
+              <option value="A" selected>Transportadora A</option>
+              <option value="B">Transportadora B</option>
+            </select>
+          </div>
+          <div class="col-lg-8">
+            <div class="kpi"><div class="text-muted">Frete total do pedido (CIF)</div><div class="value" id="fretePedido">—</div></div>
+          </div>
+        </div>
+        <div class="formula mt-2">
+          Frete = Base + (R$/km×km) + (R$/kg×peso_total) + Pedágio×(km/100) + GRIS%×<em>valor da carga por custo</em>; aplica-se o mínimo da tabela.<br>
+          <span class="small-note">GRIS aqui usa o <em>custo fabril</em> como valor declarado para evitar circularidade com o preço.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 5: Impostos, comissão e gateway -->
+    <section class="step">
+      <div class="card p-4">
+        <h2 class="h5">🧾 5) Impostos, comissão e gateway (sobre o preço)</h2>
+        <div class="row g-3">
+          <div class="col-6 col-lg-2"><label class="form-label">ICMS % (por dentro)</label><input type="number" id="icms" class="form-control" step=".1" value="18"></div>
+          <div class="col-6 col-lg-2"><label class="form-label">PIS %</label><input type="number" id="pis" class="form-control" step=".01" value="1.65"></div>
+          <div class="col-6 col-lg-2"><label class="form-label">COFINS %</label><input type="number" id="cofins" class="form-control" step=".1" value="7.6"></div>
+          <div class="col-6 col-lg-2"><label class="form-label">Comissão %</label><input type="number" id="com" class="form-control" step=".1" value="5"></div>
+          <div class="col-6 col-lg-2"><label class="form-label">Gateway %</label><input type="number" id="gw" class="form-control" step=".1" value="2.5"></div>
+          <div class="col-6 col-lg-2"><label class="form-label">Margem alvo %</label><input type="number" id="margem" class="form-control" step=".1" value="25"></div>
+        </div>
+        <div class="formula mt-2">
+          <strong>Divisor do markup</strong> = 1 − (ICMS + PIS + COFINS + Comissão + Gateway + Margem).<br>
+          <strong>Preço sugerido</strong> = Custo total unitário ÷ Divisor.  
+          <span class="small-note">Todos os percentuais são tratados “por dentro” sobre o preço, padrão em B2B/B2C BR.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- STEP 6: Resultado e composição do preço -->
+    <section class="step">
+      <div class="card p-4">
+        <h2 class="h5">📊 6) Preço sugerido e composição</h2>
+
+        <div class="row g-3">
+          <div class="col-lg-4">
+            <div class="kpi"><div class="text-muted">Custo fabril R$/un</div><div class="value" id="kCustoFab">—</div></div>
+          </div>
+          <div class="col-lg-4">
+            <div class="kpi"><div class="text-muted">Logística por un (pedido)</div><div class="value" id="kLogUnit">—</div></div>
+          </div>
+          <div class="col-lg-4">
+            <div class="kpi"><div class="text-muted">Preço sugerido (PV)</div><div class="value" id="kPV">—</div></div>
+          </div>
+        </div>
+
+        <div class="table-responsive mt-3">
+          <table class="table table-sm align-middle">
+            <thead><tr><th>Componente</th><th class="text-end">R$/un</th><th class="text-end">% do PV</th></tr></thead>
+            <tbody id="tbodyBreak"></tbody>
+          </table>
+        </div>
+
+        <details class="mt-2">
+          <summary class="fw-semibold">📘 Fórmulas deste passo</summary>
+          <div class="formula mt-2">
+            • <strong>Logística por unidade</strong> = (Picking + Emb_exp) ÷ Q + (CIF? Frete ÷ Q : 0) + Holding%×(dias/30)×Custo_fabril.<br>
+            • <strong>Custo total unitário</strong> = Custo_fabril + Logística_un.<br>
+            • <strong>PV</strong> = Custo_total ÷ [1 − (taxas + comissão + gateway + margem)].<br>
+            • <strong>% do PV</strong> = parcela ÷ PV.
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- STEP 7: Ponto de equilíbrio -->
+    <section class="step">
+      <div class="card p-4">
+        <h2 class="h5">⚖️ 7) Ponto de Equilíbrio (mês)</h2>
+        <div class="row g-3 align-items-end">
+          <div class="col-6 col-lg-3"><label class="form-label">Custos Fixos (R$/mês)</label><input type="number" id="fixos" class="form-control" value="60000"></div>
+          <div class="col-6 col-lg-3"><label class="form-label">Dias úteis/mês</label><input type="number" id="dias" class="form-control" value="22"></div>
+          <div class="col-lg-6">
+            <div class="kpi"><div class="text-muted">PEQ em unidades</div><div class="value" id="kPEQ">—</div></div>
+            <div class="small-note">PEQ = Fixos ÷ Margem de Contribuição unitária (MCu). MCu = PV×(1−taxas) − (Custo fabril + logística_un variável).</div>
+          </div>
+        </div>
+
+        <div class="table-responsive mt-3">
+          <table class="table table-sm">
+            <thead><tr><th>Cenário</th><th class="text-end">PV</th><th class="text-end">MCu</th><th class="text-end">PEQ un/mês</th></tr></thead>
+            <tbody id="tbodyPEQ"></tbody>
+          </table>
+        </div>
+        <div class="small-note">Comparamos A x B (CIF) e FOB. O melhor cenário é o de menor PEQ.</div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="py-4 border-top">
+    <div class="container d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <span>© <span id="y"></span> UC7 — Custos Logísticos</span>
+      <a class="text-decoration-none" href="index.html">Voltar</a>
+    </div>
+  </footer>
+
+  <script>
+    // ===== Helpers
+    const BRL = v => (isFinite(v)? v:0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+    const NUM = v => (isFinite(v)? v:0).toLocaleString('pt-BR',{maximumFractionDigits:2});
+    const ceil = Math.ceil;
+
+    // ===== Estado base (5 SKUs; dois compartilham MP)
+    const state = {
+      skus: [
+        {id:'S1', nome:'Balm 10g', pesoKg:0.010, unMes:6000, lote:600, precoSugerido:8.90, emb:0.70, modMin:1.8, hmMin:0.8, rec:{A:8.0, D:0.5}},
+        {id:'S2', nome:'Balm 15g', pesoKg:0.015, unMes:4000, lote:400, precoSugerido:11.90, emb:0.75, modMin:2.0, hmMin:1.0, rec:{A:12.0, D:0.7}},
+        {id:'S3', nome:'Sabonete 100g', pesoKg:0.100, unMes:9000, lote:900, precoSugerido:6.90, emb:0.50, modMin:2.6, hmMin:1.3, rec:{E:95.0, B:1.0, C:4.0}},
+        {id:'S4', nome:'Shampoo Sólido 90g', pesoKg:0.090, unMes:5000, lote:500, precoSugerido:15.90, emb:0.60, modMin:4.2, hmMin:2.1, rec:{E:80.0, C:10.0, B:0.5}},
+        {id:'S5', nome:'Condicionador 80g', pesoKg:0.080, unMes:3800, lote:380, precoSugerido:16.90, emb:0.65, modMin:5.0, hmMin:2.3, rec:{E:70.0, C:9.0, B:0.5, D:0.2}}
+      ],
+      mps: [
+        {id:'A', nome:'Resina A (compartilhada)', preco:32},
+        {id:'B', nome:'Essência Floral', preco:55},
+        {id:'C', nome:'Argila', preco:8},
+        {id:'D', nome:'Óleo Cítrico', preco:110},
+        {id:'E', nome:'Base Vegetal', preco:14}
+      ],
+      centros: { prod:22000, setup:8000, qa:5000, almox:6500, man:5500, adm:9000 },
+      depMes: 2500,
+      modHora: 18
+    };
+
+    // ===== DOM refs (em ordem dos steps)
+    const steps = [...document.querySelectorAll('.step')];
+    const bubbles = [...document.querySelectorAll('.step-index')];
+    const bar = document.getElementById('bar');
+    const els = {
+      // step1
+      skuSel: document.getElementById('sku'),
+      qtd: document.getElementById('qtd'),
+      km: document.getElementById('km'),
+      fretePolitica: document.getElementById('fretePolitica'),
+      // step2
+      modHora: document.getElementById('modHora'),
+      depMes: document.getElementById('depMes'),
+      cProd: document.getElementById('cProd'),
+      cSetup: document.getElementById('cSetup'),
+      cQA: document.getElementById('cQA'),
+      cAlmox: document.getElementById('cAlmox'),
+      cMan: document.getElementById('cMan'),
+      cAdm: document.getElementById('cAdm'),
+      tbodyProd: document.getElementById('tbodyProd'),
+      // step3
+      pick: document.getElementById('pick'),
+      pack: document.getElementById('pack'),
+      holding: document.getElementById('holding'),
+      diasEst: document.getElementById('diasEst'),
+      // step4
+      aBase: document.getElementById('aBase'), aKm: document.getElementById('aKm'), aKg: document.getElementById('aKg'), aPed: document.getElementById('aPed'), aGris: document.getElementById('aGris'), aMin: document.getElementById('aMin'),
+      bBase: document.getElementById('bBase'), bKm: document.getElementById('bKm'), bKg: document.getElementById('bKg'), bPed: document.getElementById('bPed'), bGris: document.getElementById('bGris'), bMin: document.getElementById('bMin'),
+      operador: document.getElementById('operador'),
+      fretePedido: document.getElementById('fretePedido'),
+      // step5
+      icms: document.getElementById('icms'), pis: document.getElementById('pis'), cofins: document.getElementById('cofins'), com: document.getElementById('com'), gw: document.getElementById('gw'), margem: document.getElementById('margem'),
+      // step6
+      kCustoFab: document.getElementById('kCustoFab'),
+      kLogUnit: document.getElementById('kLogUnit'),
+      kPV: document.getElementById('kPV'),
+      tbodyBreak: document.getElementById('tbodyBreak'),
+      // step7
+      fixos: document.getElementById('fixos'), dias: document.getElementById('dias'),
+      tbodyPEQ: document.getElementById('tbodyPEQ'), kPEQ: document.getElementById('kPEQ'),
+    };
+
+    // ===== Utils
+    const mpPreco = id => (state.mps.find(m=>m.id===id)||{preco:0}).preco;
+    function dmUnit(s){ let t=s.emb||0; for(const [mp,g] of Object.entries(s.rec)){ t += (g/1000)*mpPreco(mp); } return t; }
+    function driversSKU(s){ const lotes=Math.max(1,ceil(s.unMes/s.lote)); const setups=lotes; const movs=lotes*2; const modh=(s.unMes*s.modMin)/60; const hmh=(s.unMes*s.hmMin)/60; return {lotes,setups,movs,modh,hmh}; }
+    function driversTotais(){ let HM=0,MOD=0,LOTES=0,SETUPS=0,MOVS=0; state.skus.forEach(s=>{ const d=driversSKU(s); HM+=d.hmh; MOD+=d.modh; LOTES+=d.lotes; SETUPS+=d.setups; MOVS+=d.movs; }); return {HM,MOD,LOTES,SETUPS,MOVS}; }
+    function abcUnit(s){
+      const C = {...state.centros, prod:(+els.cProd.value||state.centros.prod) + (+els.depMes.value||state.depMes)};
+      const D = driversTotais();
+      // tarifas
+      const tProd = C.prod / (D.HM||1);
+      const tSetup= C.setup/ (D.SETUPS||1);
+      const tQA   = C.qa   / (D.LOTES||1);
+      const tAlmox= C.almox/ (D.MOVS||1);
+      const tMan  = C.man  / (D.HM||1);
+      const tAdm  = C.adm  / (D.MOD||1);
+      const d = driversSKU(s);
+      const total = tProd*d.hmh + tSetup*d.setups + tQA*d.lotes + tAlmox*d.movs + tMan*d.hmh + tAdm*d.modh;
+      return total/(s.unMes||1);
+    }
+    function modUnit(s){ return (s.modMin/60) * (+els.modHora.value || state.modHora); }
+
+    // ===== Step 1 render
+    function populateSKU(){
+      els.skuSel.innerHTML='';
+      state.skus.forEach(s=>els.skuSel.insertAdjacentHTML('beforeend', `<option value="${s.id}">${s.nome} (${s.pesoKg.toFixed(3)} kg)</option>`));
+      els.skuSel.value = 'S4';
+    }
+
+    // ===== Step 2 render
+    function renderProdTable(){
+      els.tbodyProd.innerHTML='';
+      state.skus.forEach(s=>{
+        const dm=dmUnit(s), mod=modUnit(s), cif=abcUnit(s), fab=dm+mod+cif;
+        els.tbodyProd.insertAdjacentHTML('beforeend', `<tr><td>${s.nome}</td><td class="text-end">${BRL(dm)}</td><td class="text-end">${BRL(mod)}</td><td class="text-end">${BRL(cif)}</td><td class="text-end fw-semibold">${BRL(fab)}</td></tr>`);
+      });
+    }
+
+    // ===== Armazenagem por un
+    function armazenagemPorUn(fab){
+      const pick = +els.pick.value||0, pack=+els.pack.value||0;
+      const holdingPct = (+els.holding.value||0)/100;
+      const dias = +els.diasEst.value||0;
+      const Q = +els.qtd.value||1;
+      const porPedido = (pick+pack)/Q;
+      const holding = holdingPct*(dias/30)*fab;
+      return {porPedido, holding, total: porPedido+holding};
+    }
+
+    // ===== Transporte
+    function fretePedido(oper, sku, fab){
+      // oper: 'A'|'B', usa custo fabril como valor da carga para GRIS
+      const km = +els.km.value||0;
+      const Q = +els.qtd.value||1;
+      const peso = Q * sku.pesoKg;
+      const valorCarga = fab * Q;
+      const o = oper==='A'
+        ? {base:+els.aBase.value||0, rkm:+els.aKm.value||0, rkg:+els.aKg.value||0, ped:+els.aPed.value||0, gris:(+els.aGris.value||0)/100, min:+els.aMin.value||0}
+        : {base:+els.bBase.value||0, rkm:+els.bKm.value||0, rkg:+els.bKg.value||0, ped:+els.bPed.value||0, gris:(+els.bGris.value||0)/100, min:+els.bMin.value||0};
+      let frete = o.base + o.rkm*km + o.rkg*peso + o.ped*(km/100) + o.gris*valorCarga;
+      if(frete < o.min) frete = o.min;
+      return frete;
+    }
+
+    // ===== Markup & PV
+    function taxas(){ // todas por dentro
+      const icms=(+els.icms.value||0)/100, pis=(+els.pis.value||0)/100, cof=(+els.cofins.value||0)/100, com=(+els.com.value||0)/100, gw=(+els.gw.value||0)/100, mar=(+els.margem.value||0)/100;
+      return {icms,pis,cof,com,gw,mar, soma: icms+pis+cof+com+gw+mar};
+    }
+
+    function precificacao(){
+      const sku = state.skus.find(s=>s.id===els.skuSel.value);
+      const dm=dmUnit(sku), mod=modUnit(sku), cif=abcUnit(sku), fab=dm+mod+cif;
+
+      // armazenagem
+      const arm = armazenagemPorUn(fab);
+
+      // frete
+      const oper = document.getElementById('operador').value;
+      const freteTotal = fretePedido(oper, sku, fab);
+      els.fretePedido.textContent = BRL(freteTotal);
+      const Q = +els.qtd.value||1;
+      const freteUn = (els.fretePolitica.value==='CIF') ? (freteTotal/Q) : 0;
+
+      // custo total unitário
+      const custoTotal = fab + arm.total + freteUn;
+
+      // markup
+      const t = taxas();
+      const divisor = 1 - t.soma;
+      const PV = custoTotal / (divisor>0? divisor: 1e-6);
+
+      // composição para a tabela
+      const impostos = PV*(t.icms + t.pis + t.cof);
+      const comissao = PV*t.com;
+      const gateway = PV*t.gw;
+      const margem = PV*t.mar;
+
+      // KPIs
+      els.kCustoFab.textContent = BRL(fab);
+      els.kLogUnit.textContent = BRL(arm.total + freteUn);
+      els.kPV.textContent = BRL(PV);
+
+      // Tabela de composição
+      els.tbodyBreak.innerHTML = '';
+      const linhas = [
+        ['Custo fabril', fab],
+        ['Armazenagem por un', arm.total],
+        ['Frete por un '+(els.fretePolitica.value==='CIF'?'(CIF)':'(FOB — 0,00)'), freteUn],
+        ['Impostos (ICMS+PIS+COFINS)', impostos],
+        ['Comissão', comissao],
+        ['Gateway', gateway],
+        ['Margem alvo', margem],
+      ];
+      linhas.forEach(([nome,valor])=>{
+        els.tbodyBreak.insertAdjacentHTML('beforeend', `<tr><td>${nome}</td><td class="text-end">${BRL(valor)}</td><td class="text-end">${(PV? (valor/PV*100):0).toFixed(1)}%</td></tr>`);
+      });
+
+      return {sku, PV, fab, arm, freteUn, custoTotal, impostos, comissao, gateway, margem, t};
+    }
+
+    // ===== PEQ
+    function pontoEquilibrio(PV, MCu){
+      const fixos = +els.fixos.value||0;
+      const un = (MCu>0? fixos/MCu : Infinity);
+      return un;
+    }
+    function renderPEQ(){
+      const escolha = ['A','B','FOB'];
+      els.tbodyPEQ.innerHTML='';
+      let best = {un:Infinity, label:''};
+      escolha.forEach(opt=>{
+        document.getElementById('operador').value = (opt==='FOB'?'A':opt);
+        const politica = (opt==='FOB'?'FOB':'CIF');
+        const oldPol = els.fretePolitica.value;
+        els.fretePolitica.value = politica;
+
+        const r = precificacao();
+        const PV = r.PV;
+        const t = r.t;
+        // contribuição por unidade (desconsidera impostos/comissões/gateway — já no fator (1 - taxas))
+        const receitaLiquida = PV*(1 - (t.icms + t.pis + t.cof + t.com + t.gw));
+        const varUnit = r.fab + r.arm.total + (politica==='CIF'? r.freteUn: 0);
+        const MCu = receitaLiquida - varUnit;
+        const peq = pontoEquilibrio(PV, MCu);
+        if(peq < best.un) best = {un:peq, label:(opt==='FOB'?'FOB':('CIF '+opt))};
+
+        els.tbodyPEQ.insertAdjacentHTML('beforeend',
+          `<tr><td>${opt==='FOB'?'FOB (cliente paga)':('CIF — Transportadora '+opt)}</td><td class="text-end">${BRL(PV)}</td><td class="text-end">${BRL(MCu)}</td><td class="text-end">${NUM(peq)}</td></tr>`
+        );
+
+        els.fretePolitica.value = oldPol;
+      });
+      els.kPEQ.textContent = NUM(best.un) + '  — melhor cenário: ' + best.label;
+    }
+
+    // ===== Render All
+    function renderAll(){
+      // sync de campos de centros/mod/dep
+      state.modHora = +els.modHora.value || state.modHora;
+      state.depMes  = +els.depMes.value  || state.depMes;
+      state.centros = {
+        prod:+els.cProd.value||0,
+        setup:+els.cSetup.value||0,
+        qa:+els.cQA.value||0,
+        almox:+els.cAlmox.value||0,
+        man:+els.cMan.value||0,
+        adm:+els.cAdm.value||0
+      };
+
+      renderProdTable();
+      const r = precificacao();
+      renderPEQ();
+      // volta operador selecionado (precificação mexe para simular PEQ)
+      document.getElementById('operador').value = document.getElementById('operador').value;
+    }
+
+    // ===== Listeners
+    function addInputs(selector){
+      document.querySelectorAll(selector).forEach(el=>{
+        el.addEventListener('input', renderAll);
+        el.addEventListener('change', renderAll);
+      });
+    }
+    addInputs('input, select');
+
+    // Stepper
+    bubbles.forEach((b,i)=>{
+      b.addEventListener('click', ()=>{
+        steps.forEach(s=>s.classList.remove('show'));
+        steps[i].classList.add('show');
+        bubbles.forEach(bb=>bb.classList.remove('active'));
+        b.classList.add('active');
+        const pct = (i/(steps.length-1))*100; bar.style.width = pct + '%';
+        window.scrollTo({top:0, behavior:'smooth'});
+      });
+    });
+
+    // Boot
+    (function init(){
+      document.getElementById('y').textContent = new Date().getFullYear();
+      populateSKU();
+      renderAll();
+    })();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
