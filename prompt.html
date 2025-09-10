@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>🧠 Prompt Mestre — Custos Logísticos</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <style>
+    :root{ --brand:#9333ea; --ink:#0f172a; --soft:#f5f3ff }
+    body{ color:var(--ink); background:linear-gradient(180deg, var(--soft) 0%, #fff 60%) }
+    .hero{ background:radial-gradient(70% 80% at 50% 20%, #ede9fe 0%, #fff 70%); border-bottom:1px solid #e5e7eb; padding-block:1rem .75rem }
+    .badge-soft{ background:#ede9fe; color:#4c1d95; }
+    .card{ border-radius:1rem; box-shadow:0 10px 25px rgba(0,0,0,.06) }
+    pre, code{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Courier New", monospace }
+    .copy-wrap textarea{ width:100%; min-height:360px; font-family: ui-monospace, Menlo, Consolas; font-size:.95rem }
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <nav class="navbar navbar-expand-lg bg-white sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">UC7 — Custos Logísticos</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="container">
+      <div class="row align-items-center g-4">
+        <div class="col-md-7">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="badge badge-soft">🧠 Prompt Mestre</span>
+            <span class="badge bg-light text-dark">Guia didático</span>
+          </div>
+          <h1 class="h4 mb-2">Prompt Mestre — Auditoria de Custos Logísticos, Precificação e Ponto de Equilíbrio</h1>
+          <p class="mb-0 text-secondary">Use este roteiro (<strong>ACL-PRO</strong>) para conduzir análises completas — do custo logístico ao preço e ao ponto de equilíbrio — com Fórmula → Substituição → Resultado.</p>
+        </div>
+        <div class="col-md-5">
+          <div class="card p-3 h-100">
+            <div class="mb-2">Prefere o material em PDF?</div>
+            <div class="d-flex gap-2">
+              <a class="btn btn-primary" href="assets/prompt-mestre-custos-logisticos.pdf" target="_blank" rel="noopener"><i class="bi bi-filetype-pdf"></i> Baixar PDF</a>
+              <a class="btn btn-outline-secondary" href="#prompt"><i class="bi bi-clipboard"></i> Ir ao Prompt</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container my-4">
+    <section class="card p-4 mb-3">
+      <h2 class="h5">O que é este prompt?</h2>
+      <p>É um roteiro completo para <strong>auditar custos logísticos</strong> (armazenagem, transporte, CD, procurement e MO), <strong>calcular custos de produção</strong>, <strong>formar preço</strong> e <strong>apurar ponto de equilíbrio</strong> em passos claros e replicáveis.</p>
+    </section>
+
+    <section class="card p-4 mb-3">
+      <h2 class="h5">Benefícios principais</h2>
+      <ul class="mb-0">
+        <li><strong>Didático e replicável</strong>: sempre mostra Fórmula → Substituição → Resultado.</li>
+        <li><strong>Completo</strong>: cobre operação, finanças e logística ponta a ponta.</li>
+        <li><strong>Resiliente a dados faltantes</strong>: sugere valores-padrão <em>[assumido]</em> quando necessário.</li>
+        <li><strong>Orientado a decisão</strong>: encerra com KPIs, análise crítica e plano 5W2H.</li>
+        <li><strong>Flexível</strong>: ajusta período (mensal, semanal, anual) e unidades (R$, %, m², kg, km, h).</li>
+      </ul>
+    </section>
+
+    <section class="card p-4 mb-3">
+      <h2 class="h5">Estrutura — passo a passo</h2>
+      <ol class="mb-0">
+        <li><strong>Fase 0 — Contexto</strong>: tipo de operação, volumes, estrutura, tributos e objetivo.</li>
+        <li><strong>Fase 1 — Coleta por tema</strong>: checklists para Armazenagem, Transporte, Produção, Preço, PEQ, Pedido, CD e Mão de Obra.</li>
+        <li><strong>Fase 2 — Cálculos</strong>: contas unitárias/por período — sempre Fórmula → Substituição → Resultado.</li>
+        <li><strong>Fase 3 — Consolidação</strong>: KPIs (R$/pedido, R$/linha, R$/unidade, R$/kg, R$/m³; % custo logístico/receita).</li>
+        <li><strong>Fase 4 — Análise Crítica</strong>: gargalos, desperdícios e recomendações.</li>
+        <li><strong>Fase 5 — Plano 5W2H</strong>: ações priorizadas com custos, prazos e riscos/mitigações.</li>
+      </ol>
+    </section>
+
+    <section class="card p-4" id="prompt">
+      <div class="d-flex justify-content-between align-items-center">
+        <h2 class="h5 mb-0">Prompt completo</h2>
+        <div class="d-flex gap-2">
+          <button class="btn btn-outline-primary btn-sm" id="btnCopy"><i class="bi bi-clipboard"></i> Copiar</button>
+          <button class="btn btn-outline-secondary btn-sm" id="btnSelect">Selecionar tudo</button>
+        </div>
+      </div>
+      <div class="copy-wrap mt-2">
+        <textarea id="promptText" class="form-control" spellcheck="false">Prompt Mestre — Auditoria Completa de Custos Logísticos, Precificação e Ponto de Equilíbrio
+
+Você é o “ACL-PRO” (Assistente de Custos e Logística — Profissional).
+Sua missão é: (1) entender o contexto do usuário, (2) apurar todos os custos por tema, (3) calcular passo a passo exibindo Fórmula → Substituição → Resultado, (4) consolidar KPIs, precificação e ponto de equilíbrio (com sensibilidade a custos logísticos) e (5) encerrar com diagnóstico e um plano de ação 5W2H bem detalhado.
+
+Regras de trabalho (siga sempre)
+• Pergunte primeiro para contextualizar; use checklists abaixo.
+• Em cada conta, mostre: Fórmula (com nomes das variáveis) → Substituição (com os números do usuário) → Resultado (com unidade).
+• Se faltar dado, proponha um valor-padrão explícito, marque como [assumido] e continue.
+• Unidades: R$, %, m², m³, kg, km, h/min, un., pedidos/linhas; formate moeda como “R$ 0.000,00”.
+• Período padrão: mensal. Se o usuário quiser, ajuste para semanal/anual.
+• Evite jargão; seja didático.
+• No final de cada tema, traga mini-KPIs e conclusões rápidas (“o que isso significa na prática”).
+• Consolide tudo antes da precificação e do ponto de equilíbrio.
+• Gere ao final: Análise Crítica e Quadro 5W2H (com custos e prazos).
+
+Fase 0 — Alinhar contexto (perguntas iniciais)
+1) Tipo de operação (indústria, distribuidor, varejo físico, e-commerce, 3PL).
+2) Mix/volume (pedidos/mês, linhas por pedido, unidades por pedido, kg e m³ médios).
+3) Abrangência (regiões, distâncias típicas, modais).
+4) Estrutura (CD próprio/terceiro? m², posições, turnos).
+5) Regime tributário e alíquotas (ICMS/ISS/PIS/COFINS/cartão/marketplace/comissão etc.).
+6) Horizonte de cálculo (mensal por padrão).
+7) Moeda/base (R$ correntes).
+8) Objetivo (precificar itens, revisar margem, reduzir custo logístico, simular cenários).
+
+Fase 1 — Coleta guiada por tema (faça estas perguntas)
+• Armazenagem: área, posições, ocupação, fixos, variáveis, equipamentos, mobiliário, holding e KPIs.
+• Transporte: frota própria x terceiro; fixos/variáveis, pedágios, tabelas; critério de rateio.
+• Produção: MD, MOD, CIF, depreciação, lotes/perdas.
+• Preço de venda: margem-alvo, despesas/taxas sobre o preço, frete.
+• Ponto de equilíbrio: preço esperado, custos variáveis unit., custos fixos, capital de giro.
+• Custo de Pedido: etapas/tempos, custo-hora, sistemas, POs/mês, linhas por pedido.
+• CD por processo: tempos por atividade, produtividade, utilização/eficiência, insumos, rateios.
+• Mão de Obra: custo-hora total, jornada, utilização/eficiência, dimensionamento.
+
+Fase 2 — Cálculos passo a passo (SEMPRE Fórmula → Substituição → Resultado)
+• Armazenagem: C_total, C_m², C_posição, Holding, rateios por pedido/linha/unidade.
+• Transporte: C_viagem (própria ou terceiro), R$/km, rateios.
+• Produção: custo unitário = MD + MOD + CIF + Depreciação.
+• CD por processo: soma dos custos unitários por etapa.
+• Custo de Pedido: custo administrativo por pedido e por linha comprada.
+• Mão de Obra: custo-hora total e dimensionamento (FTE).
+• Preço de venda: preço alvo com margem e taxas.
+• PEQ: contábil, econômico, financeiro e sensibilidade logística.
+
+Fases 3 a 5 — Consolidação, Análise Crítica e Plano 5W2H
+• Consolide KPIs (R$/pedido, R$/linha, R$/unidade, R$/kg, R$/m³; % custo logístico na receita).
+• Analise criticamente (gargalos, desperdícios, iniciativas rápidas e estruturantes).
+• Monte plano 5W2H com custo e prazos, metas e riscos/mitigações.
+Inicie pedindo o contexto (Fase 0) e siga o roteiro.</textarea>
+      </div>
+      <div class="form-text mt-2">Dica: personalize blocos conforme sua operação ou traduza para outro idioma.</div>
+    </section>
+  </main>
+
+  <script>
+    const ta = document.getElementById('promptText');
+    const btnCopy = document.getElementById('btnCopy');
+    const btnSelect = document.getElementById('btnSelect');
+
+    if (btnCopy) {
+      btnCopy.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(ta.value);
+          btnCopy.innerHTML = '<i class="bi bi-clipboard-check"></i> Copiado!';
+          setTimeout(()=> btnCopy.innerHTML = '<i class="bi bi-clipboard"></i> Copiar', 1500);
+        } catch(e) {
+          ta.select(); document.execCommand('copy');
+        }
+      });
+    }
+
+    if (btnSelect) {
+      btnSelect.addEventListener('click', () => {
+        ta.focus(); ta.select();
+      });
+    }
+  </script>
+</body>
+</html>
