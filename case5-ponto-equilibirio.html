@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>⚖️ Ponto de Equilíbrio • Contábil, Econômico e Financeiro (tema claro)</title>
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root{
+      --brand:#1e88e5;
+      --brand-2:#42a5f5;
+      --ink:#0b1118;            /* texto principal */
+      --muted:#405162;          /* texto secundário */
+      --paper:#f7fafc;          /* fundo da página */
+      --card:#ffffff;           /* fundo de cartões */
+      --line:#e6eef5;           /* linhas/bordas */
+      --chip:#e7f2ff;           /* badge suave */
+      --chip-ink:#175ea6;
+      --mono:#1b2733;           /* código/monospace */
+    }
+    body{ background:var(--paper); color:var(--ink); }
+    header .help, .muted{ color:var(--muted); }
+    .card{ background:var(--card); border:1px solid var(--line); border-radius:1rem; }
+    .badge-soft{ background:var(--chip); color:var(--chip-ink); border:1px solid #cfe6ff; }
+    .emoji{ font-size:1.25rem; margin-right:.35rem }
+    .small-mono,.formula{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; color:var(--mono); }
+    .btn-brand{ background:linear-gradient(90deg,var(--brand),var(--brand-2)); color:#fff; border:0; }
+    .btn-brand:hover{ filter:brightness(1.05); color:#fff; }
+    .form-range::-webkit-slider-thumb{ background:var(--brand); }
+    .kpi{ font-weight:700; font-size:1.05rem; color:var(--ink); }
+    .divider{ height:1px; background:linear-gradient(90deg,transparent,var(--line) 40%,var(--line) 60%,transparent); }
+    .table{ --bs-table-bg: transparent; --bs-table-border-color:var(--line); color:var(--ink); }
+    .table tbody tr:hover{ background:#f4f9ff; }
+    .alert-dark{ background:#fff8e1; color:#5d4400; border:1px solid #ffe8a3; }
+    a, a:hover{ color:#175ea6; }
+    .callout{ border-left:4px solid var(--brand); background:#f0f6ff; padding:.85rem 1rem; border-radius:.5rem; }
+    .help{ color:var(--muted); font-size:.95rem; }
+    .formula{ background:#f4f8fb; border:1px solid var(--line); padding:.5rem .75rem; border-radius:.5rem; display:block; }
+  </style>
+</head>
+<body>
+  <div class="container py-4 py-md-5">
+    <header class="mb-4">
+      <h1 class="h3 mb-2">⚖️ Ponto de Equilíbrio — <span class="muted">Contábil, Econômico e Financeiro</span></h1>
+      <p class="help mb-1">Com sensibilidade a <strong>custos logísticos</strong> (fixos e variáveis), fórmulas e passo a passo.</p>
+      <span class="badge rounded-pill badge-soft">Didática • Fórmula → Substituição → Resultado</span>
+    </header>
+
+    <!-- EXPLICAÇÃO E FÓRMULAS -->
+    <section class="card mb-4">
+      <div class="card-body">
+        <h3 class="h5 mb-3"><span class="emoji">📘</span>Conceitos e Fórmulas</h3>
+
+        <div class="row g-3">
+          <div class="col-lg-6">
+            <div class="callout mb-3">
+              <p class="mb-2"><strong>Margem de Contribuição (MC)</strong> financia os custos fixos e o lucro.</p>
+              <span class="formula">MC₍unidade₎ = Preço − Impostos(%) − Comissão(%) − Custos Variáveis (produção + logística)</span>
+              <span class="formula mt-2">MC% = MC₍unidade₎ ÷ Preço</span>
+              <p class="help mt-2 mb-0">Custos variáveis logísticos incluem: <em>frete por unidade/pedido, embalagem, picking/packing por peça</em>, etc.</p>
+            </div>
+            <div class="callout">
+              <p class="mb-2"><strong>Custos Fixos (CF)</strong> = Produção + Logística + Administrativos (inclui depreciação no contábil).</p>
+              <span class="formula">CF<sub>contábil</sub> = CF<sub>prod</sub> + CF<sub>log</sub> + CF<sub>adm</sub> (inclui depreciação)</span>
+              <span class="formula mt-2">CF<sub>financeiro</sub> = CF<sub>contábil</sub> − Depreciação (itens não caixa)</span>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="callout mb-3">
+              <p class="mb-2"><strong>PE Contábil</strong> (sem lucro alvo; com depreciação):</p>
+              <span class="formula">PE<sub>contábil</sub> (unid) = CF<sub>contábil</sub> ÷ MC₍unidade₎</span>
+              <span class="formula mt-2">PE<sub>contábil</sub> (R$) = PE<sub>contábil</sub>(unid) × Preço</span>
+            </div>
+            <div class="callout mb-3">
+              <p class="mb-2"><strong>PE Econômico</strong> (inclui <em>lucro desejado</em> / remuneração do capital):</p>
+              <span class="formula">PE<sub>econ</sub> (unid) = (CF<sub>contábil</sub> + Lucro<sub>desejado</sub>) ÷ MC₍unidade₎</span>
+              <p class="help mb-0">Lucro<sub>desejado</sub> pode ser informado direto (R$) e/ou como ROI% × Capital Investido.</p>
+            </div>
+            <div class="callout">
+              <p class="mb-2"><strong>PE Financeiro</strong> (foco no caixa; exclui depreciação):</p>
+              <span class="formula">PE<sub>fin</sub> (unid) = CF<sub>financeiro</sub> ÷ MC₍unidade₎</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ENTRADAS -->
+    <section class="card mb-4">
+      <div class="card-body">
+        <h3 class="h5 mb-3"><span class="emoji">🧮</span>Entradas do Modelo</h3>
+        <div class="row g-3">
+          <div class="col-md-4">
+            <label class="form-label">Preço de Venda (R$/un.)</label>
+            <input id="preco" type="number" class="form-control" value="120">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Impostos sobre Vendas (% do preço)</label>
+            <input id="impostos" type="number" class="form-control" value="12">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Comissão/Vendas (% do preço)</label>
+            <input id="comissao" type="number" class="form-control" value="5">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Custo Variável de Produção (R$/un.)</label>
+            <input id="cv_prod" type="number" class="form-control" value="48">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Custo Variável Logístico (R$/un.)</label>
+            <input id="cv_log" type="number" class="form-control" value="10">
+            <div class="help mt-1">Ex.: picking/packing por peça, embalagem, fração de frete por unidade.</div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Depreciação (mês, R$)</label>
+            <input id="depreciacao" type="number" class="form-control" value="3000">
+            <div class="help mt-1">Usada no contábil (inclui), excluída no financeiro.</div>
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">CF Produção (mês, R$)</label>
+            <input id="cf_prod" type="number" class="form-control" value="15000">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">CF Logística (mês, R$)</label>
+            <input id="cf_log" type="number" class="form-control" value="8000">
+            <div class="help mt-1">Ex.: aluguel/armazém, frota própria, WMS, equipe fixa.</div>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">CF Administrativos (mês, R$)</label>
+            <input id="cf_adm" type="number" class="form-control" value="7000">
+          </div>
+
+          <div class="col-md-4">
+            <label class="form-label">Lucro Alvo (R$/mês)</label>
+            <input id="lucro_alvo" type="number" class="form-control" value="5000">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">Capital Investido (R$)</label>
+            <input id="capital" type="number" class="form-control" value="200000">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label">ROI Desejado (% a.m.)</label>
+            <input id="roi" type="number" class="form-control" value="1.5">
+            <div class="help mt-1">Lucro econômico adicional = ROI% × Capital.</div>
+          </div>
+        </div>
+
+        <div class="divider my-4"></div>
+
+        <!-- Sensibilidade Logística -->
+        <h4 class="h6 mb-3"><span class="emoji">🚚</span>Sensibilidade de Custos Logísticos</h4>
+        <div class="row gy-3 align-items-center">
+          <div class="col-lg-6">
+            <label for="sens_cv" class="form-label">Variação do Custo Variável Logístico (% por un.)</label>
+            <input id="sens_cv" type="range" class="form-range" min="-50" max="100" value="0" step="1">
+            <div class="d-flex justify-content-between small">
+              <span>-50%</span><span id="sens_cv_val">0%</span><span>+100%</span>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <label for="sens_cf" class="form-label">Variação do Custo Fixo Logístico (% ao mês)</label>
+            <input id="sens_cf" type="range" class="form-range" min="-50" max="100" value="0" step="1">
+            <div class="d-flex justify-content-between small">
+              <span>-50%</span><span id="sens_cf_val">0%</span><span>+100%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-4 d-flex gap-2">
+          <button id="btnCalc" class="btn btn-brand">Calcular</button>
+          <button id="btnReset" class="btn btn-outline-secondary">Restaurar padrões</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- RESULTADOS RESUMO -->
+    <section class="row g-3 mb-4">
+      <div class="col-lg-4">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="mb-2">📊 Margem e Contribuição</h5>
+            <div class="d-flex justify-content-between"><span>MC por unidade</span><span class="kpi" id="mc_un">—</span></div>
+            <div class="d-flex justify-content-between"><span>MC%</span><span class="kpi" id="mc_pct">—</span></div>
+            <div class="d-flex justify-content-between"><span>CF (contábil)</span><span class="kpi" id="cf_contabil">—</span></div>
+            <div class="d-flex justify-content-between"><span>CF (financeiro)</span><span class="kpi" id="cf_fin">—</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5 class="mb-2">🎯 Pontos de Equilíbrio (Unidades)</h5>
+            <div class="row g-2">
+              <div class="col-md-4"><div class="d-flex justify-content-between"><span>PE Contábil</span><span class="kpi" id="pe_cont_un">—</span></div></div>
+              <div class="col-md-4"><div class="d-flex justify-content-between"><span>PE Econômico</span><span class="kpi" id="pe_econ_un">—</span></div></div>
+              <div class="col-md-4"><div class="d-flex justify-content-between"><span>PE Financeiro</span><span class="kpi" id="pe_fin_un">—</span></div></div>
+            </div>
+            <div class="mt-3"><canvas id="peChart" height="110"></canvas></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PASSO A PASSO -->
+    <section class="card mb-4">
+      <div class="card-body">
+        <h3 class="h5 mb-3"><span class="emoji">🧾</span>Passo a passo — Fórmula → Substituição → Resultado</h3>
+        <div id="passos" class="accordion accordion-flush">
+          <!-- Itens gerados via JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- TABELA DETALHES -->
+    <section class="card mb-5">
+      <div class="card-body">
+        <h3 class="h5 mb-3"><span class="emoji">🔎</span>Detalhamento de Cálculo</h3>
+        <div class="table-responsive">
+          <table class="table align-middle">
+            <thead>
+              <tr>
+                <th>Item</th><th>Fórmula</th><th>Substituição</th><th>Resultado</th>
+              </tr>
+            </thead>
+            <tbody id="tblDetalhes">
+              <!-- Linhas geradas via JS -->
+            </tbody>
+          </table>
+        </div>
+        <div id="alerta" class="alert alert-dark mt-3 d-none">
+          ⚠️ <strong>Atenção:</strong> a <em>Margem de Contribuição por unidade</em> ficou ≤ 0. Reveja preço, impostos, comissões e/ou custos variáveis (especialmente os logísticos).
+        </div>
+      </div>
+    </section>
+
+    <footer class="text-center muted small">
+      Feito com ❤️, Bootstrap e JavaScript. • Tema claro.
+    </footer>
+  </div>
+
+  <script>
+    // Helpers
+    const brl = v => new Intl.NumberFormat('pt-BR',{style:'currency', currency:'BRL'}).format(v || 0);
+    const pct = v => (isFinite(v) ? (v*100).toFixed(2) + '%' : '—');
+    const fmt = v => isFinite(v) ? v.toLocaleString('pt-BR', {maximumFractionDigits:2}) : '—';
+    const ceilIfFinite = v => isFinite(v) ? Math.ceil(v) : NaN;
+
+    // Elements
+    const el = id => document.getElementById(id);
+    const ids = ["preco","impostos","comissao","cv_prod","cv_log","depreciacao","cf_prod","cf_log","cf_adm","lucro_alvo","capital","roi","sens_cv","sens_cf"];
+    const sensCvLabel = el('sens_cv_val'), sensCfLabel = el('sens_cf_val');
+
+    // Chart
+    let chart;
+    function renderChart(peCont, peEcon, peFin){
+      const ctx = document.getElementById('peChart');
+      const data = {
+        labels: ['Contábil','Econômico','Financeiro'],
+        datasets: [{ label:'Unidades', data:[peCont, peEcon, peFin]}]
+      };
+      if(chart){ chart.destroy(); }
+      chart = new Chart(ctx, { type:'bar', data, options:{
+        responsive:true,
+        plugins:{ legend:{display:false}, tooltip:{mode:'index', intersect:false} },
+        scales:{ x:{ grid:{display:false}}, y:{ beginAtZero:true, grid:{color:'rgba(0,0,0,.08)'}}}
+      }});
+    }
+
+    function collect(){
+      const vals = {};
+      ids.forEach(id => vals[id] = parseFloat(el(id).value || 0));
+      return vals;
+    }
+
+    function buildRow(item, formula, subs, result){
+      return `<tr>
+        <td>${item}</td>
+        <td class="small-mono">${formula}</td>
+        <td class="small-mono">${subs}</td>
+        <td class="small-mono">${result}</td>
+      </tr>`;
+    }
+
+    function passosClear(){
+      el('passos').innerHTML = '';
+    }
+
+    function passoAdd(title, formula, subs, result){
+      const idx = document.querySelectorAll('#passos .accordion-item').length + 1;
+      el('passos').insertAdjacentHTML('beforeend', `
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="p${idx}">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#c${idx}">
+              ${idx}. ${title}
+            </button>
+          </h2>
+          <div id="c${idx}" class="accordion-collapse collapse" data-bs-parent="#passos">
+            <div class="accordion-body">
+              <div><span class="badge badge-soft rounded-pill mb-2">Fórmula</span><div class="formula">${formula}</div></div>
+              <div class="mt-3"><span class="badge badge-soft rounded-pill mb-2">Substituição</span><div class="formula">${subs}</div></div>
+              <div class="mt-3"><span class="badge badge-soft rounded-pill mb-2">Resultado</span><div class="formula">${result}</div></div>
+            </div>
+          </div>
+        </div>
+      `);
+    }
+
+    function calc(){
+      const v = collect();
+
+      // Sensibilidade aplicada
+      const cvLogEff = v.cv_log * (1 + v.sens_cv/100);
+      const cfLogEff = v.cf_log * (1 + v.sens_cf/100);
+
+      // Componentes sobre o preço
+      const imp = v.preco * (v.impostos/100);
+      const com = v.preco * (v.comissao/100);
+
+      // MC un.
+      const mc_un = v.preco - imp - com - v.cv_prod - cvLogEff;
+      const mc_pct = mc_un / v.preco;
+
+      // CF contábil e financeiro
+      const cf_cont = v.cf_prod + cfLogEff + v.cf_adm;
+      const cf_fin = cf_cont - v.depreciacao; // exclui itens não caixa
+
+      // Lucro desejado (econômico)
+      const lucroRoi = v.capital * (v.roi/100);
+      const lucroDesejado = (v.lucro_alvo || 0) + (lucroRoi || 0);
+
+      // Pontos de equilíbrio
+      const pe_cont = mc_un > 0 ? cf_cont / mc_un : NaN;
+      const pe_econ = mc_un > 0 ? (cf_cont + lucroDesejado) / mc_un : NaN;
+      const pe_fin = mc_un > 0 ? cf_fin / mc_un : NaN;
+
+      // Atualiza KPIs
+      el('mc_un').textContent = brl(mc_un);
+      el('mc_pct').textContent = isFinite(mc_pct) ? (mc_pct*100).toFixed(2)+'%' : '—';
+      el('cf_contabil').textContent = brl(cf_cont);
+      el('cf_fin').textContent = brl(cf_fin);
+
+      el('pe_cont_un').textContent = isFinite(pe_cont) ? fmt(ceilIfFinite(pe_cont))+' un.' : '—';
+      el('pe_econ_un').textContent = isFinite(pe_econ) ? fmt(ceilIfFinite(pe_econ))+' un.' : '—';
+      el('pe_fin_un').textContent = isFinite(pe_fin) ? fmt(ceilIfFinite(pe_fin))+' un.' : '—';
+
+      // Gráfico
+      renderChart(ceilIfFinite(pe_cont)||0, ceilIfFinite(pe_econ)||0, ceilIfFinite(pe_fin)||0);
+
+      // Alerta MC <= 0
+      el('alerta').classList.toggle('d-none', !(mc_un <= 0));
+
+      // Tabela de detalhes
+      const tbl = el('tblDetalhes');
+      tbl.innerHTML = '';
+      tbl.insertAdjacentHTML('beforeend', buildRow(
+        'Impostos (por un.)',
+        'Imp = Preço × %Imp',
+        `Imp = ${brl(v.preco)} × ${v.impostos}%`,
+        brl(imp)
+      ));
+      tbl.insertAdjacentHTML('beforeend', buildRow(
+        'Comissão (por un.)',
+        'Com = Preço × %Com',
+        `Com = ${brl(v.preco)} × ${v.comissao}%`,
+        brl(com)
+      ));
+      tbl.insertAdjacentHTML('beforeend', buildRow(
+        'CV Logístico (sensibilizado)',
+        'CV<sub>log,eff</sub> = CV<sub>log</sub> × (1 + Δ%)',
+        `${brl(v.cv_log)} × (1 + ${v.sens_cv}%)`,
+        brl(cvLogEff)
+      ));
+      tbl.insertAdjacentHTML('beforeend', buildRow(
+        'CF Logístico (sensibilizado)',
+        'CF<sub>log,eff</sub> = CF<sub>log</sub> × (1 + Δ%)',
+        `${brl(v.cf_log)} × (1 + ${v.sens_cf}%)`,
+        brl(cfLogEff)
+      ));
+      tbl.insertAdjacentHTML('beforeend', buildRow(
+        'MC por unidade',
+        'MC = Preço − Imp − Com − CV<sub>prod</sub> − CV<sub>log,eff</sub>',
+        `${brl(v.preco)} − ${brl(imp)} − ${brl(com)} − ${brl(v.cv_prod)} − ${brl(cvLogEff)}`,
+        brl(mc_un)
+      ));
+      tbl.insertAdjacentHTML('beforeend', buildRow(
+        'CF (contábil)',
+        'CF<sub>cont</sub> = CF<sub>prod</sub> + CF<sub>log,eff</sub> + CF<sub>adm</sub>',
+        `${brl(v.cf_prod)} + ${brl(cfLogEff)} + ${brl(v.cf_adm)}`,
+        brl(cf_cont)
+      ));
+      tbl.insertAdjacentHTML('beforeend', buildRow(
+        'CF (financeiro)',
+        'CF<sub>fin</sub> = CF<sub>cont</sub> − Depreciação',
+        `${brl(cf_cont)} − ${brl(v.depreciacao)}`,
+        brl(cf_fin)
+      ));
+      tbl.insertAdjacentHTML('beforeend', buildRow(
+        'Lucro desejado (econômico)',
+        'Lucro = Lucro Alvo + (ROI% × Capital)',
+        `${brl(v.lucro_alvo)} + (${v.roi}% × ${brl(v.capital)})`,
+        brl(lucroDesejado)
+      ));
+      tbl.insertAdjacentHTML('beforeend', buildRow(
+        'PE Contábil (un.)',
+        'PE<sub>cont</sub> = CF<sub>cont</sub> ÷ MC',
+        `${brl(cf_cont)} ÷ ${brl(mc_un)}`,
+        isFinite(pe_cont) ? fmt(ceilIfFinite(pe_cont))+' un.' : '—'
+      ));
+      tbl.insertAdjacentHTML('beforeend', buildRow(
+        'PE Econômico (un.)',
+        'PE<sub>econ</sub> = (CF<sub>cont</sub> + Lucro) ÷ MC',
+        `(${brl(cf_cont)} + ${brl(lucroDesejado)}) ÷ ${brl(mc_un)}`,
+        isFinite(pe_econ) ? fmt(ceilIfFinite(pe_econ))+' un.' : '—'
+      ));
+      tbl.insertAdjacentHTML('beforeend', buildRow(
+        'PE Financeiro (un.)',
+        'PE<sub>fin</sub> = CF<sub>fin</sub> ÷ MC',
+        `${brl(cf_fin)} ÷ ${brl(mc_un)}`,
+        isFinite(pe_fin) ? fmt(ceilIfFinite(pe_fin))+' un.' : '—'
+      ));
+
+      // Passo a passo
+      passosClear();
+      passoAdd('Margem de Contribuição por unidade',
+        'MC = Preço − Impostos − Comissão − CV<sub>prod</sub> − CV<sub>log,eff</sub>',
+        `${brl(v.preco)} − ${brl(imp)} − ${brl(com)} − ${brl(v.cv_prod)} − ${brl(cvLogEff)}`,
+        `MC = <strong>${brl(mc_un)}</strong> • MC% = <strong>${pct(mc_pct)}</strong>`
+      );
+      passoAdd('Custos Fixos (contábil e financeiro)',
+        'CF<sub>cont</sub> = CF<sub>prod</sub> + CF<sub>log,eff</sub> + CF<sub>adm</sub> ; CF<sub>fin</sub> = CF<sub>cont</sub> − Depreciação',
+        `${brl(v.cf_prod)} + ${brl(cfLogEff)} + ${brl(v.cf_adm)} ; ${brl(cf_cont)} − ${brl(v.depreciacao)}`,
+        `CF<sub>cont</sub> = <strong>${brl(cf_cont)}</strong> ; CF<sub>fin</sub> = <strong>${brl(cf_fin)}</strong>`
+      );
+      passoAdd('Ponto de Equilíbrio Contábil (unid)',
+        'PE<sub>cont</sub> = CF<sub>cont</sub> ÷ MC',
+        `${brl(cf_cont)} ÷ ${brl(mc_un)}`,
+        `PE<sub>cont</sub> = <strong>${isFinite(pe_cont)? fmt(ceilIfFinite(pe_cont))+' un.' : '—'}</strong>`
+      );
+      passoAdd('Ponto de Equilíbrio Econômico (unid)',
+        'PE<sub>econ</sub> = (CF<sub>cont</sub> + Lucro<sub>desejado</sub>) ÷ MC',
+        `(${brl(cf_cont)} + ${brl(lucroDesejado)}) ÷ ${brl(mc_un)}`,
+        `PE<sub>econ</sub> = <strong>${isFinite(pe_econ)? fmt(ceilIfFinite(pe_econ))+' un.' : '—'}</strong>`
+      );
+      passoAdd('Ponto de Equilíbrio Financeiro (unid)',
+        'PE<sub>fin</sub> = CF<sub>fin</sub> ÷ MC',
+        `${brl(cf_fin)} ÷ ${brl(mc_un)}`,
+        `PE<sub>fin</sub> = <strong>${isFinite(pe_fin)? fmt(ceilIfFinite(pe_fin))+' un.' : '—'}</strong>`
+      );
+    }
+
+    // Eventos
+    document.getElementById('btnCalc').addEventListener('click', calc);
+    ids.forEach(id => el(id).addEventListener('input', e => {
+      if(id === 'sens_cv') sensCvLabel.textContent = e.target.value + '%';
+      if(id === 'sens_cf') sensCfLabel.textContent = e.target.value + '%';
+    }));
+    document.getElementById('btnReset').addEventListener('click', () => {
+      el('preco').value = 120;
+      el('impostos').value = 12;
+      el('comissao').value = 5;
+      el('cv_prod').value = 48;
+      el('cv_log').value = 10;
+      el('depreciacao').value = 3000;
+      el('cf_prod').value = 15000;
+      el('cf_log').value = 8000;
+      el('cf_adm').value = 7000;
+      el('lucro_alvo').value = 5000;
+      el('capital').value = 200000;
+      el('roi').value = 1.5;
+      el('sens_cv').value = 0; el('sens_cv_val').textContent='0%';
+      el('sens_cf').value = 0; el('sens_cf_val').textContent='0%';
+      calc();
+    });
+
+    // Inicializa
+    calc();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
