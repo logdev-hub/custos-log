@@ -5,35 +5,46 @@
 ## 🎯 Objetivos
 - Demonstrar **custos diretos e indiretos** de logística com linguagem clara e visual.
 - Oferecer **exercícios guiados** com fórmulas e resultados intermediários.
-- Consolidar **KPIs**: custo por pedido, por linha, por m², por unidade estocada, utilização de MO, etc.
+- Consolidar **KPIs**: custo por pedido/linha, por m², por unidade estocada, utilização de MO, etc.
 
 ## 📦 O que já vem pronto
-- **Home (`index.html`)**: navegação da UC7, cards de conteúdos e link para o Case de Armazenagem.
-- **Case 1 — Armazenagem (`case1-armazenagem.html`)**: enunciado completo, fórmulas, cálculos passo a passo, transições (fade), resultados e KPIs.
-- **Responsivo** (Bootstrap via CDN) e **zero build** (só abrir o HTML no navegador).
+- **Home (`index.html`)**: navegação da UC7 e cards de conteúdos.
+- **Case 1 — Armazenagem (`case1-armazenagem.html`)**: custos por área, holding, processos e KPIs.
+- **Case 2 — Transporte (`case2-transporte.html`)**: fixos/variáveis, pedágio, GRIS e R$/km • R$/kg.
+- **Case 3 — Produção (`case3-producao.html`)**: DM, MOD, CIF, depreciação, Tradicional × ABC.
+- **Case 4 — Formação de Preço (`case4-preco.html`)**: markup, impostos, comissionamento, frete e PEQ.
+- **Case 5 — Ponto de Equilíbrio (`case5-ponto-equilibirio.html`)**: PE contábil/econômico/financeiro com sensibilidade logística.
+- **Case 6 — Custo de Pedido (`case6-custo-pedido.html`)**: custo/linha comprada, tempos administrativos e automação (EDI/NF-e).
+- **Case 7 — Custo por Processo (CD) (`case7-processos-cd.html`)**: recebimento, put-away, picking, embalagem, expedição e inventário.
+- **Case 8 — Mão de Obra Direta/Indireta (`case8-mao-de-obra.html`)**: dimensionamento, custo/h, utilização e impactos no custo logístico.
+- **Sobre (`sobre.html`)**: proposta do projeto e instruções de publicação.
 
-> Dica: Os números do Case 1 são didáticos e podem ser ajustados no objeto `params` (ver seção **Parametrização**).
+**Todos os cases** possuem **navbar padrão** “UC7 — Custos Logísticos” e mantêm o visual responsivo (Bootstrap via CDN).
 
 ---
 
 ## 🗂️ Estrutura de pastas (sugerida)
 ```
 uc7-custos-logisticos/
-├─ index.html                # Página inicial da UC7
-├─ case1-armazenagem.html    # Estudo completo de custos de armazenagem (pequeno porte)
-├─ assets/                   # (opcional) imagens e arquivos estáticos
-│  ├─ img/
-│  └─ css/ js/
+├─ index.html
+├─ sobre.html
+├─ case1-armazenagem.html
+├─ case2-transporte.html
+├─ case3-producao.html
+├─ case4-preco.html
+├─ case5-ponto-equilibirio.html
+├─ case6-custo-pedido.html
+├─ case7-processos-cd.html
+├─ case8-mao-de-obra.html
 └─ README.md
 ```
-
-> As dependências (Bootstrap e ícones) são carregadas por **CDN** — não há node_modules.
+> Dependências (Bootstrap e ícones) por **CDN** — não há node_modules.
 
 ---
 
 ## ▶️ Como rodar localmente
 **Opção 1 (mais simples):**
-1. Baixe/clique duas vezes em `index.html` para abrir no navegador.
+1. Clique duas vezes em `index.html`.
 
 **Opção 2 (servidor local):**
 ```bash
@@ -42,92 +53,47 @@ npx serve .
 # ou
 python -m http.server 8080
 ```
-Acesse: `http://localhost:3000` ou `http://localhost:8080` (conforme a ferramenta).
+Acesse `http://localhost:3000` ou `http://localhost:8080`.
 
 ---
 
 ## 🌐 Publicar no GitHub Pages
 1. Crie um repositório **público** (ex.: `uc7-custos-logisticos`).
-2. Envie `index.html` e `case1-armazenagem.html` para a branch **main**.
+2. Envie todos os arquivos (`index.html`, `sobre.html` e `case*.html`) para a branch **main**.
 3. Vá em **Settings → Pages** → **Source: Deploy from a branch**.
 4. Selecione **Branch: main** e **/ (root)** → **Save**.
-5. Acesse a URL: `https://<seu-usuario>.github.io/uc7-custos-logisticos/`.
+5. Acesse: `https://<seu-usuario>.github.io/uc7-custos-logisticos/`.
 
-Links úteis do site:
+Links úteis:
 - Home: `/`
+- Sobre: `/sobre.html`
 - Case 1: `/case1-armazenagem.html`
+- Case 2: `/case2-transporte.html`
+- Case 3: `/case3-producao.html`
+- Case 4: `/case4-preco.html`
+- Case 5: `/case5-ponto-equilibirio.html`
+- Case 6: `/case6-custo-pedido.html`
+- Case 7: `/case7-processos-cd.html`
+- Case 8: `/case8-mao-de-obra.html`
 
 ---
 
-## ⚙️ Parametrização (Case 1 — Armazenagem)
-No arquivo `case1-armazenagem.html`, ajuste o objeto **`params`** no `<script>` para simular cenários:
-```js
-const params = {
-  areaTotal: 150,
-  areaPrat: 90,
-  areaPP: 30,
-  areaOper: 30,
-  estoqueMedio: 5000,
-  pedidosMes: 250,
-  linhasExpedidas: 400,
-  POs: 15,
-  linhasCompradas: 300,
-  aluguel: 6750,
-  util: 1500,
-  seguros: 400,
-  seguranca: 350,
-  manut: 500,
-  ti: 600,
-  deprecEstr: 833.33,
-  deprecMHE: 83.33,
-  overheadAdm: 800,
-  moDireta: 7040,
-  moIndireta: 2640,
-  consumiveis: 1350,
-  adminCompras: 493.75,
-  custoHoraMOD: 20,
-  custoHoraMOI: 30,
-  recebMinPorLinha: 3.5,
-  putMinPorLinha: 2.0,
-  pickMinPorLinha: 3.0,
-  embMinPorPedido: 7.0,
-  inventarioHoras: 24,
-  expedicaoMiscHoras: 12,
-  etiquetaPorLinha: 0.50,
-  insumosPorPedido: 3.00,
-  skusContadosMes: 80,
-};
-```
-> Os resultados e KPIs se atualizam automaticamente quando esses valores mudam.
+## ⚙️ Parametrizações e Fórmulas (resumo)
+- **Custo unitário de processo** = (min ÷ 60 × R$/h) + insumos.
+- **Custo de pedido (linha)** = (horas adm. × R$/h + sistemas) ÷ linhas.
+- **Holding** = base de área + deprec + fração de TI/overhead → por unidade estocada.
+- **PE Contábil** = CF_contábil ÷ MC_un; **PE Econômico** = (CF + lucro alvo) ÷ MC_un; **PE Financeiro** = CF_fin ÷ MC_un.
+- **Transporte**: custo viagem = fixos rateados por hora + variáveis por km + pedágio + GRIS.
 
 ---
 
-## 🧮 Fórmulas principais (sem LaTeX)
-- **Custo de m²/mês** = (aluguel + utilidades + seguros + segurança + manutenção) ÷ m².
-- **Prateleira (por localização/mês)** = Custo m² × 0,25 m² (4 loc/m²).
-- **Porta‑palete (por posição/mês)** = Custo m² × ~1,0 m² por posição.
-- **Holding (mês)** = base de área + deprec. estruturas + 50% TI + 50% (MO indireta + overhead adm.).
-- **Custo por unidade estocada (mês)** = Holding ÷ estoque médio (unidades).
-- **Custo unitário do processo** = (minutos ÷ 60 × custo/h) + consumíveis (se houver).
-- **Custo de pedido (por linha comprada)** = (horas adm. × custo/h) ÷ linhas do mês.
-- **KPIs**: custo por pedido = Total ÷ pedidos; custo por linha = Total ÷ linhas; custo por m² = base de área ÷ m²; produtividade = linhas ÷ horas.
-
----
-
-## 🧭 Roadmap
-- [ ] Custos de **Transporte** (fixos/variáveis, faixas, pedágio/GRIS, modais)
-- [ ] Custos de **Produção** (CIF, centros de custos, rateios)
-- [ ] **Formação de Preço** (markup, impostos, frete, margem)
-- [ ] **Margem de Contribuição** (por item/pedido/cliente)
-- [ ] **Ponto de Equilíbrio** (contábil/econômico/financeiro)
-- [ ] **Custo de Pedido** (admin compras/recebimento detalhado)
-
-Contribuições são bem-vindas! Abra uma **issue** ou envie um **pull request**.
+## 🧭 Roadmap (sugestões)
+- [ ] Painéis comparativos entre cases (consolidação de KPIs).
+- [ ] Exportar resultados para CSV/PNG (tabelas e gráficos).
+- [ ] Integração mínima com inputs via URL (query string) para cenários.
 
 ---
 
 ## 👤 Autor & Licença
 - Autor: **Leandro Pereira** (UC7 — Custos Logísticos)
-- Licença: **MIT** (ajuste se preferir outra)
-
-> Se publicar como **GitHub Pages**, lembre de manter os links relativos (`case1-armazenagem.html`) e o repositório como **público**.
+- Licença: **MIT**
