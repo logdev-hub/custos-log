@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>🧾 Case 6 — Custo de Pedido (compras + automação EDI/NF-e)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <style>
+    :root{ --brand:#0ea5e9; --ink:#0f172a; --soft:#f0f9ff; --ok:#16a34a; --warn:#f59e0b; }
+    body{ color:var(--ink); background:linear-gradient(180deg, var(--soft) 0%, #fff 60%) }
+    .hero{ background:radial-gradient(70% 80% at 50% 20%, #e0f2fe 0%, #fff 70%); border-bottom:1px solid #e5e7eb; padding-block:1rem .5rem }
+    .badge-soft{ background:#e0f2fe; color:#075985; }
+    .card{ border-radius:1rem; box-shadow:0 10px 25px rgba(0,0,0,.06) }
+    .step{ display:none; opacity:0; transition:opacity .2s ease; margin-top:1rem }
+    .step.show{ display:block; opacity:1 }
+    .step-index{ width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:700; background:#e2e8f0; cursor:pointer }
+    .step-index.active{ background:var(--brand); color:#fff }
+    .progress{ height:8px }
+    .pill{ display:inline-block; border-radius:999px; padding:.35rem .75rem; background:#f1f5f9 }
+    .formula{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Courier New", monospace; background:#f8fafc; border-radius:.5rem; padding:.75rem }
+    .kpi{ border-left:6px solid var(--brand); padding-left:1rem }
+    .kpi .value{ font-size:1.35rem; font-weight:800; color:#111827 }
+    .small-note{ color:#64748b; font-size:.92rem }
+    .nav-controls{ gap:.5rem }
+    .nav-controls .btn{ min-width:140px }
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <nav class="navbar navbar-expand-lg bg-white sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">UC7 — Custos Logísticos</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="container">
+      <div class="row align-items-center g-4">
+        <div class="col-md-7">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="pill">🧾 Case 6</span>
+            <span class="badge badge-soft">Custo de Pedido</span>
+            <span class="pill">Admin compras • EDI • NF-e</span>
+          </div>
+          <h1 class="h4 mb-2">Custo por linha comprada com cenários de automação (EDI/NF-e)</h1>
+          <p class="mb-0 text-secondary">Informe volumes mensais, custo/h do time de compras, tempos por etapa e o nível de automação. O modelo calcula <strong>R$/linha</strong>, <strong>R$/PO</strong> e o <strong>payback</strong> da automação.</p>
+        </div>
+        <div class="col-md-5">
+          <div class="card p-3">
+            <div class="progress mb-2"><div class="progress-bar bg-primary" id="bar" role="progressbar" style="width:0%"></div></div>
+            <div class="d-flex align-items-center gap-2" id="stepper">
+              <button type="button" class="step-index active" data-step="0" aria-label="Ir para passo 1">1</button>
+              <button type="button" class="step-index" data-step="1" aria-label="Ir para passo 2">2</button>
+              <button type="button" class="step-index" data-step="2" aria-label="Ir para passo 3">3</button>
+              <button type="button" class="step-index" data-step="3" aria-label="Ir para passo 4">4</button>
+            </div>
+            <div class="small-note mt-2">Dica: use <kbd>→</kbd>/<kbd>←</kbd> para navegar.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container my-4">
+
+    <!-- STEP 1: Volumes e custo/h -->
+    <section class="step show" id="step-1">
+      <div class="card p-4">
+        <h2 class="h5">🎯 1) Volumes e custo/h</h2>
+        <div class="row g-3">
+          <div class="col-6 col-lg-3"><label class="form-label">POs/mês</label><input type="number" id="posMes" class="form-control" value="15"></div>
+          <div class="col-6 col-lg-3"><label class="form-label">Linhas compradas/mês</label><input type="number" id="linhasMes" class="form-control" value="300"></div>
+          <div class="col-6 col-lg-3"><label class="form-label">Custo/h compras (R$)</label><input type="number" id="custoH" class="form-control" value="35"></div>
+          <div class="col-6 col-lg-3"><label class="form-label">Custo mensal de EDI/WMS (R$)</label><input type="number" id="custoSistema" class="form-control" value="800"></div>
+        </div>
+        <div class="formula mt-2">Fórmula: <strong>R$/linha</strong> = (Horas_admin × R$/h + Custo_sistema) ÷ Linhas_mês.</div>
+      </div>
+    </section>
+
+    <!-- STEP 2: Tempos por etapa (sem automação) -->
+    <section class="step" id="step-2">
+      <div class="card p-4">
+        <h2 class="h5">⌛ 2) Tempos por etapa (sem automação)</h2>
+        <div class="row g-2">
+          <div class="col-6 col-lg-3"><label class="form-label">Cotação e cadastro (min/linha)</label><input type="number" id="tCotacao" class="form-control" value="2.5"></div>
+          <div class="col-6 col-lg-3"><label class="form-label">Emissão da PO (min/linha)</label><input type="number" id="tPO" class="form-control" value="1.2"></div>
+          <div class="col-6 col-lg-3"><label class="form-label">Conferência NF (min/linha)</label><input type="number" id="tNF" class="form-control" value="1.8"></div>
+          <div class="col-6 col-lg-3"><label class="form-label">Aprovação/financeiro (min/linha)</label><input type="number" id="tFin" class="form-control" value="1.0"></div>
+        </div>
+        <div class="small-note mt-2">Ajuste os tempos conforme sua realidade. Eles serão reduzidos conforme a automação.</div>
+      </div>
+    </section>
+
+    <!-- STEP 3: Automação -->
+    <section class="step" id="step-3">
+      <div class="card p-4">
+        <h2 class="h5">⚙️ 3) Automação — EDI, NF-e, conciliação</h2>
+        <div class="row g-3">
+          <div class="col-6 col-lg-4"><label class="form-label">Adoção de EDI (%)</label><input type="number" id="pEDI" class="form-control" value="60"></div>
+          <div class="col-6 col-lg-4"><label class="form-label">NF-e automática (%)</label><input type="number" id="pNFe" class="form-control" value="70"></div>
+          <div class="col-6 col-lg-4"><label class="form-label">Conciliação automática (%)</label><input type="number" id="pConc" class="form-control" value="50"></div>
+        </div>
+        <div class="formula mt-2">Reduções típicas: EDI −40% (PO/cadastro), NF-e auto −50% (conferência NF), Conciliação −35% (financeiro).</div>
+      </div>
+    </section>
+
+    <!-- STEP 4: Resultados -->
+    <section class="step" id="step-4">
+      <div class="card p-4">
+        <h2 class="h5">📊 4) Resultados e KPIs</h2>
+        <div class="row g-3">
+          <div class="col-lg-6">
+            <table class="table table-sm align-middle">
+              <tbody>
+                <tr><td>Horas administrativas (mês)</td><td class="text-end" id="outHoras">–</td></tr>
+                <tr><td>Custo administrativo (R$)</td><td class="text-end" id="outCAdm">–</td></tr>
+                <tr><td>Custo de sistema (R$)</td><td class="text-end" id="outSys">–</td></tr>
+                <tr class="table-light"><th>Custo por linha (R$)</th><th class="text-end" id="outLinha">–</th></tr>
+                <tr><td>Custo por PO (R$)</td><td class="text-end" id="outPO">–</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-lg-6">
+            <div class="kpi mb-3"><div class="text-muted">Economia vs. sem automação</div><div class="value" id="outEcon">–</div><div class="small-note">Diferença em R$/linha.</div></div>
+            <div class="kpi"><div class="text-muted">Payback do sistema</div><div class="value" id="outPayback">–</div><div class="small-note">Meses para o ganho cobrir o custo mensal do EDI/WMS.</div></div>
+          </div>
+        </div>
+        <div class="formula mt-2">
+          • <strong>Horas_admin</strong> = Linhas×[(tCot + tPO×(1−.4×pEDI) + tNF×(1−.5×pNFe) + tFin×(1−.35×pConc)) ÷ 60].<br/>
+          • <strong>C_adm</strong> = Horas_admin × R$/h.<br/>
+          • <strong>R$/linha</strong> = (C_adm + C_sistema) ÷ Linhas.<br/>
+          • <strong>Payback (meses)</strong> = C_sistema ÷ (R$/linha_sem_auto − R$/linha_com_auto) × Linhas.
+        </div>
+      </div>
+    </section>
+
+    <!-- NAV CONTROLS -->
+    <div class="d-flex justify-content-between align-items-center mt-3 nav-controls">
+      <button type="button" class="btn btn-outline-secondary" id="btnPrev"><i class="bi bi-arrow-left"></i> Anterior</button>
+      <button type="button" class="btn btn-primary" id="btnNext">Próximo <i class="bi bi-arrow-right"></i></button>
+    </div>
+
+  </main>
+
+  <script>
+    // ----- Navegação entre passos -----
+    const steps = [...document.querySelectorAll('.step')];
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    const bar = document.getElementById('bar');
+    const bullets = [...document.querySelectorAll('.step-index')];
+
+    let cur = 0; // índice do passo atual (0..3)
+
+    function clamp(i){ return Math.max(0, Math.min(i, steps.length-1)); }
+
+    function updateBullets(){
+      bullets.forEach((b, idx) => b.classList.toggle('active', idx === cur));
+    }
+
+    function updateButtons(){
+      btnPrev.disabled = (cur === 0);
+      btnNext.textContent = (cur === steps.length-1) ? 'Concluir' : 'Próximo ';
+      if(cur !== steps.length-1){
+        btnNext.innerHTML = 'Próximo <i class="bi bi-arrow-right"></i>';
+      } else {
+        btnNext.innerHTML = 'Concluir';
+      }
+    }
+
+    function showStep(i){
+      i = clamp(i);
+      steps[cur].classList.remove('show');
+      steps[i].classList.add('show');
+      cur = i;
+      bar.style.width = (i/(steps.length-1))*100 + '%';
+      updateBullets();
+      updateButtons();
+      compute(); // sempre recalcula
+    }
+
+    // Eventos dos botões
+    btnPrev.addEventListener('click', () => showStep(cur-1));
+    btnNext.addEventListener('click', () => showStep(cur+1));
+
+    // Cliques nos indicadores
+    bullets.forEach(b => {
+      b.addEventListener('click', () => {
+        const idx = parseInt(b.getAttribute('data-step'), 10);
+        showStep(idx);
+      });
+    });
+
+    // Navegação por teclado
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight') showStep(cur+1);
+      if (e.key === 'ArrowLeft')  showStep(cur-1);
+    });
+
+    // ----- Cálculos -----
+    const val = id => parseFloat(document.getElementById(id).value || 0);
+
+    function compute(){
+      const posMes = val('posMes');
+      const linhas = Math.max(val('linhasMes'),1);
+      const rph = val('custoH');
+      const cSys = val('custoSistema');
+
+      const tCot = val('tCotacao');
+      const tPO  = val('tPO');
+      const tNF  = val('tNF');
+      const tFin = val('tFin');
+
+      const pEDI = val('pEDI')/100;
+      const pNFe = val('pNFe')/100;
+      const pConc= val('pConc')/100;
+
+      // baseline sem automação
+      const min_sem   = (tCot + tPO + tNF + tFin);
+      const horas_sem = (linhas * min_sem) / 60;
+      const cadm_sem  = horas_sem * rph;
+      const rpl_sem   = (cadm_sem + cSys) / linhas;
+
+      // com automação (reduções parciais ponderadas)
+      const tPO_eff  = tPO  * (1 - 0.40 * pEDI);
+      const tCot_eff = tCot * (1 - 0.40 * pEDI);
+      const tNF_eff  = tNF  * (1 - 0.50 * pNFe);
+      const tFin_eff = tFin * (1 - 0.35 * pConc);
+
+      const min_com  = (tCot_eff + tPO_eff + tNF_eff + tFin_eff);
+      const horas    = (linhas * min_com) / 60;
+      const cadm     = horas * rph;
+      const rpl      = (cadm + cSys) / linhas;
+      const rppo     = (cadm + cSys) / Math.max(posMes,1);
+
+      // Saídas
+      const fmt = (n, d=2) => Number(n).toLocaleString('pt-BR', {minimumFractionDigits:d, maximumFractionDigits:d});
+      document.getElementById('outHoras').textContent  = fmt(horas, 2);
+      document.getElementById('outCAdm').textContent   = fmt(cadm, 2);
+      document.getElementById('outSys').textContent    = fmt(cSys, 2);
+      document.getElementById('outLinha').textContent  = fmt(rpl, 2);
+      document.getElementById('outPO').textContent     = fmt(rppo, 2);
+
+      const econ = rpl_sem - rpl;
+      document.getElementById('outEcon').textContent   = fmt(econ, 2) + ' R$/linha';
+
+      const pay = econ > 0 ? (cSys / (econ * linhas)) : Infinity;
+      document.getElementById('outPayback').textContent = (pay===Infinity ? '—' : fmt(pay, 1) + ' meses');
+    }
+
+    // Inputs disparam recálculo
+    document.querySelectorAll('input').forEach(el => el.addEventListener('input', compute));
+
+    // Inicializa UI
+    showStep(0);
+  </script>
+</body>
+</html>

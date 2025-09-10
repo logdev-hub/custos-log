@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>👥 Case 8 — Mão de Obra Direta e Indireta (dimensionamento, custo/h e utilização)</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet"/>
+  <style>
+    :root{ --brand:#22c55e; --ink:#0f172a; --soft:#ecfdf5; --ok:#16a34a; --warn:#f59e0b; }
+    body{ color:var(--ink); background:linear-gradient(180deg, var(--soft) 0%, #fff 60%) }
+    .hero{ background:radial-gradient(70% 80% at 50% 20%, #dcfce7 0%, #fff 70%); border-bottom:1px solid #e5e7eb; padding-block:1rem .5rem }
+    .badge-soft{ background:#dcfce7; color:#065f46; }
+    .card{ border-radius:1rem; box-shadow:0 10px 25px rgba(0,0,0,.06) }
+    .formula{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Courier New", monospace; background:#f8fafc; border-radius:.5rem; padding:.75rem }
+    .kpi{ border-left:6px solid var(--brand); padding-left:1rem }
+    .kpi .value{ font-size:1.35rem; font-weight:800; color:#111827 }
+    .small-note{ color:#64748b; font-size:.92rem }
+    .table-sm th, .table-sm td{ vertical-align:middle }
+  </style>
+</head>
+<body>
+  <!-- NAV -->
+  <nav class="navbar navbar-expand-lg bg-white sticky-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="index.html">UC7 — Custos Logísticos</a>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <header class="hero">
+    <div class="container">
+      <div class="row align-items-center g-4">
+        <div class="col-md-7">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="pill">👥 Case 8</span>
+            <span class="badge badge-soft">Mão de Obra Direta/Indireta</span>
+            <span class="pill">Dimensionamento • Utilização</span>
+          </div>
+          <h1 class="h4 mb-2">Dimensione a equipe, calcule custo/h e impactos no custo logístico</h1>
+          <p class="mb-0 text-secondary">Informe turnos, horas/dia, dias/mês, absenteísmo e salários. O modelo calcula <strong>horas disponíveis</strong>, <strong>FTE</strong>, <strong>custo/h</strong> e a <strong>utilização</strong> com base na carga de trabalho dos processos.</p>
+        </div>
+        <div class="col-md-5">
+          <div class="card p-3">
+            <div class="fw-semibold mb-2">Entradas resumidas</div>
+            <ul class="mb-0">
+              <li>👤 Qtd. operadores e supervisores</li>
+              <li>⏱️ Turnos, horas/turno, dias/mês</li>
+              <li>📉 Absenteísmo (%)</li>
+              <li>💸 Salários + encargos</li>
+              <li>📦 Carga (linhas/pedidos) e tempos</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container my-4">
+    <section class="card p-4 mb-4">
+      <h2 class="h5">🎯 Parâmetros de jornada e equipe</h2>
+      <div class="row g-3">
+        <div class="col-6 col-lg-2"><label class="form-label">Turnos/dia</label><input type="number" id="turnos" class="form-control" value="1"></div>
+        <div class="col-6 col-lg-2"><label class="form-label">Horas/turno</label><input type="number" id="hTurno" class="form-control" value="8"></div>
+        <div class="col-6 col-lg-2"><label class="form-label">Dias úteis/mês</label><input type="number" id="dias" class="form-control" value="22"></div>
+        <div class="col-6 col-lg-2"><label class="form-label">Absenteísmo (%)</label><input type="number" id="abs" class="form-control" value="5"></div>
+        <div class="col-6 col-lg-2"><label class="form-label">Operadores (qty)</label><input type="number" id="op" class="form-control" value="2"></div>
+        <div class="col-6 col-lg-2"><label class="form-label">Supervisores (FTE)</label><input type="number" id="sup" class="form-control" value="0.5"></div>
+      </div>
+      <div class="row g-3 mt-1">
+        <div class="col-6 col-lg-3"><label class="form-label">Custo/h Operador (R$)</label><input type="number" id="cOp" class="form-control" value="20"></div>
+        <div class="col-6 col-lg-3"><label class="form-label">Custo/h Supervisor (R$)</label><input type="number" id="cSup" class="form-control" value="30"></div>
+        <div class="col-6 col-lg-3"><label class="form-label">Overhead Adm/mês (R$)</label><input type="number" id="oh" class="form-control" value="800"></div>
+        <div class="col-6 col-lg-3"><label class="form-label">TI/WMS/mês (R$)</label><input type="number" id="ti" class="form-control" value="600"></div>
+      </div>
+      <div class="formula mt-2">Horas disponíveis por FTE = Turnos × Horas/turno × Dias × (1 − Abs%).</div>
+    </section>
+
+    <section class="card p-4 mb-4">
+      <h2 class="h5">🧮 Carga de trabalho (processos)</h2>
+      <div class="row g-2">
+        <div class="col-6 col-lg-2"><label class="form-label">Linhas recebidas/mês</label><input type="number" id="linRec" class="form-control" value="300"></div>
+        <div class="col-6 col-lg-2"><label class="form-label">Linhas put-away/mês</label><input type="number" id="linPut" class="form-control" value="300"></div>
+        <div class="col-6 col-lg-2"><label class="form-label">Linhas picking/mês</label><input type="number" id="linPick" class="form-control" value="400"></div>
+        <div class="col-6 col-lg-2"><label class="form-label">Pedidos/mês</label><input type="number" id="pedMes" class="form-control" value="250"></div>
+        <div class="col-6 col-lg-2"><label class="form-label">Emb. min/pedido</label><input type="number" id="tPack" class="form-control" value="7.0"></div>
+        <div class="col-6 col-lg-2"><label class="form-label">Expedição misc. h/mês</label><input type="number" id="tExpH" class="form-control" value="12"></div>
+        <div class="col-6 col-lg-2"><label class="form-label">Inventário h/mês</label><input type="number" id="tInvH" class="form-control" value="24"></div>
+        <div class="col-12 col-lg-4"><label class="form-label">Tempos min/linha (rec,put,pick)</label><input type="text" id="temposLin" class="form-control" value="3.5,2.0,3.0"></div>
+      </div>
+      <div class="small-note mt-1">Use vírgula para separar os tempos de recebimento, put-away e picking.</div>
+      <div class="formula mt-2">Horas demandadas = Σ(linhas × min/60) + (pedidos × tEmb/60) + tExpH + tInvH.</div>
+    </section>
+
+    <section class="card p-4">
+      <h2 class="h5">📊 Resultados</h2>
+      <div class="row g-3">
+        <div class="col-lg-6">
+          <table class="table table-sm align-middle">
+            <tbody>
+              <tr><td>Horas disponíveis — Operadores</td><td class="text-end" id="hDispOp">–</td></tr>
+              <tr><td>Horas disponíveis — Supervisão</td><td class="text-end" id="hDispSup">–</td></tr>
+              <tr><td>Horas demandadas — processos</td><td class="text-end" id="hDem">–</td></tr>
+              <tr class="table-light"><th>Utilização (%)</th><th class="text-end" id="uti">–</th></tr>
+              <tr><td>FTE necessário</td><td class="text-end" id="fte">–</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-lg-6">
+          <div class="kpi mb-3"><div class="text-muted">Custo/h (MOD média)</div><div class="value" id="kCustoH">–</div><div class="small-note">[(op×R$/h_op)+(sup×R$/h_sup)] ÷ (op+sup)</div></div>
+          <div class="kpi"><div class="text-muted">Custo mensal total (MO + overhead)</div><div class="value" id="kCustoTot">–</div><div class="small-note">((op×R$/h_op + sup×R$/h_sup)×Horas_disp_FTE) + overheads</div></div>
+        </div>
+      </div>
+      <div class="formula mt-2">
+        • <strong>Horas_disp_FTE</strong> = Turnos×Horas/turno×Dias×(1−Abs%).<br/>
+        • <strong>Horas_dem</strong> = [(LinRec×tRec + LinPut×tPut + LinPick×tPick)/60] + [Ped×tEmb/60] + ExpH + InvH.<br/>
+        • <strong>Utilização</strong> = Horas_dem ÷ (Horas_disp_total).<br/>
+        • <strong>FTE_necessário</strong> = Horas_dem ÷ Horas_disp_FTE.<br/>
+        • <strong>Custo_mensal</strong> = (Op×R$/h_op + Sup×R$/h_sup) × Horas_disp_FTE + Overheads.
+      </div>
+    </section>
+  </main>
+
+<script>
+function v(id){ return parseFloat((document.getElementById(id).value||'0').toString().replace(',','.')) || 0; }
+function calc(){
+  const turnos=v('turnos'), hTurno=v('hTurno'), dias=v('dias'), abs=v('abs')/100;
+  const op=v('op'), sup=v('sup'), cOp=v('cOp'), cSup=v('cSup');
+  const oh=v('oh'), ti=v('ti');
+
+  const linRec=v('linRec'), linPut=v('linPut'), linPick=v('linPick'), ped=v('pedMes');
+  const tPack=v('tPack'), tExpH=v('tExpH'), tInvH=v('tInvH');
+  const [tRec,tPut,tPick] = (document.getElementById('temposLin').value||'0,0,0').split(',').map(x=>parseFloat(x.replace(',','.'))||0);
+
+  const hDispFTE = turnos*hTurno*dias*(1-abs);
+  const hDispOp = op*hDispFTE;
+  const hDispSup = sup*hDispFTE;
+  const hDispTot = hDispOp + hDispSup;
+
+  const hDem = ((linRec*tRec + linPut*tPut + linPick*tPick)/60) + (ped*tPack/60) + tExpH + tInvH;
+  const uti = hDispTot>0? (hDem/hDispTot):0;
+  const fteNec = hDispFTE>0? (hDem/hDispFTE):0;
+
+  const custoHmedio = (op*cOp + sup*cSup) / Math.max( (op+sup), 0.0001);
+  const custoMensalMO = (op*cOp + sup*cSup) * hDispFTE;
+  const custoMensalTot = custoMensalMO + oh + ti;
+
+  document.getElementById('hDispOp').textContent = hDispOp.toLocaleString('pt-BR', {minimumFractionDigits:2});
+  document.getElementById('hDispSup').textContent = hDispSup.toLocaleString('pt-BR', {minimumFractionDigits:2});
+  document.getElementById('hDem').textContent = hDem.toLocaleString('pt-BR', {minimumFractionDigits:2});
+  document.getElementById('uti').textContent = (uti*100).toLocaleString('pt-BR', {minimumFractionDigits:1});
+  document.getElementById('fte').textContent = fteNec.toLocaleString('pt-BR', {minimumFractionDigits:2});
+
+  document.getElementById('kCustoH').textContent = custoHmedio.toLocaleString('pt-BR', {minimumFractionDigits:2});
+  document.getElementById('kCustoTot').textContent = custoMensalTot.toLocaleString('pt-BR', {minimumFractionDigits:2});
+}
+document.querySelectorAll('input').forEach(i=> i.addEventListener('input', calc));
+calc();
+</script>
+</body>
+</html>
