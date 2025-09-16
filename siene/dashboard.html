@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Siene Cosmetics — Dashboard de Custos</title>
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+<!-- Google Charts -->
+<script src="https://www.gstatic.com/charts/loader.js"></script>
+
+<style>
+  :root{
+    --brand-dark:#2F3E2C;   /* verde escuro (img 3) */
+    --brand-mid:#8A9C73;    /* verde médio   (img 3) */
+    --brand-light:#DDE2CB;  /* verde claro   (img 3) */
+    --ink:#20301F;
+    --bg:#FAFBF7;
+  }
+  *{ box-sizing:border-box }
+  html{ scroll-behavior:smooth }
+  body{
+    font-family:'Nunito Sans',system-ui,-apple-system,Segoe UI,Roboto,Arial,Helvetica,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+  }
+  .navbar{
+    background:var(--brand-dark)!important;
+  }
+  .navbar .nav-link, .navbar-brand{
+    color:#fff!important; font-weight:700;
+  }
+  .hero{
+    background:linear-gradient(120deg, var(--brand-dark), var(--brand-mid));
+    color:#fff; border-bottom:6px solid var(--brand-light);
+  }
+  .badge-soft{
+    background:var(--brand-light); color:var(--brand-dark); font-weight:700;
+  }
+  .card{
+    border:0; border-radius:18px; box-shadow:0 10px 24px rgba(0,0,0,.06);
+  }
+  .card h5{ font-weight:800 }
+  .kpi{
+    font-size:1.8rem; font-weight:800; color:var(--brand-dark);
+  }
+  .table thead{
+    background:var(--brand-mid); color:#fff;
+  }
+  .table tbody tr.highlight{
+    background:rgba(141,156,115,.12);
+  }
+  .btn-brand{
+    background:var(--brand-dark); color:#fff; border:0;
+  }
+  .btn-outline-brand{
+    border:2px solid var(--brand-dark); color:var(--brand-dark); font-weight:700;
+  }
+  .pill{
+    display:inline-block; padding:.35rem .6rem; border-radius:999px;
+    background:var(--brand-light); color:var(--brand-dark); font-weight:700; font-size:.85rem;
+  }
+
+  /* Fade in/out */
+  .fade-section{ opacity:0; transform:translateY(10px); transition:opacity .5s ease, transform .5s ease; }
+  .fade-section.show{ opacity:1; transform:none; }
+  .fade-hide{ opacity:0!important; transition:opacity .35s ease }
+  .fade-show{ opacity:1!important; transition:opacity .35s ease }
+
+  /* Accordion tweak */
+  .accordion-button:not(.collapsed){ background:var(--brand-light); color:var(--brand-dark); font-weight:800 }
+
+  /* Tiny helper chips in tables */
+  .chip{ font-size:.8rem; padding:.2rem .5rem; border-radius:.5rem; background:#eef3ea; color:#2f3e2c; font-weight:700 }
+
+  /* Footer */
+  footer{ border-top:6px solid var(--brand-light); background:#fff }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="navbar navbar-expand-lg sticky-top">
+  <div class="container">
+    <a class="navbar-brand" href="#top">🌿 Siene Cosmetics</a>
+    <button class="navbar-toggler text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div id="navMain" class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto gap-1">
+        <li class="nav-item"><a class="nav-link" href="#custos">📦 Custos</a></li>
+        <li class="nav-item"><a class="nav-link" href="#kpis">📊 KPIs</a></li>
+        <li class="nav-item"><a class="nav-link" href="#mercado">🛒 Mercado</a></li>
+        <li class="nav-item"><a class="nav-link" href="#acao">🗂️ Plano de Ação</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header id="top" class="hero py-5">
+  <div class="container">
+    <div class="row align-items-center g-4">
+      <div class="col-lg-7">
+        <h1 class="display-5 fw-bold">Dashboard de Custos • <span class="badge badge-soft">Siene Cosmetics</span></h1>
+        <p class="lead mb-3">Visão consolidada de <strong>produção, transporte, armazenagem</strong> e indicadores financeiros com comparativo de mercado e plano de ação.</p>
+        <div class="d-flex gap-2">
+          <a href="#custos" class="btn btn-light fw-bold">Explorar Custos ⤵️</a>
+          <a href="#mercado" class="btn btn-outline-light fw-bold">Comparar com Mercado 🛍️</a>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="p-4 rounded-4" style="background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.24)">
+          <div class="row text-center">
+            <div class="col-6">
+              <div class="kpi">R$ <span id="kpi-ctu">8,10</span></div>
+              <div>💄 Custo Total Entregue (un)</div>
+            </div>
+            <div class="col-6">
+              <div class="kpi">R$ <span id="kpi-pv">11,57</span></div>
+              <div>🧮 Preço Sugerido (30%)</div>
+            </div>
+          </div>
+          <div id="chart-costs-pie" style="height:220px" class="mt-3"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- SEÇÃO: CUSTOS -->
+<section id="custos" class="py-5 fade-section">
+  <div class="container">
+    <div class="d-flex align-items-center mb-3">
+      <h2 class="me-3 fw-bold">📦 Estrutura de Custos</h2>
+      <span class="pill">Produção • Transporte • Armazenagem • CTU</span>
+    </div>
+
+    <div class="row g-4">
+      <!-- Produção -->
+      <div class="col-md-6 col-xl-3">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5>🏭 Custo de Produção</h5>
+            <div class="kpi">R$ <span id="cProd">5,08</span> <small class="text-muted fs-6">/un</small></div>
+            <div id="chart-prod" style="height:120px"></div>
+
+            <div class="accordion" id="accProd">
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#prodDet">Fórmulas & cálculo</button>
+                </h2>
+                <div id="prodDet" class="accordion-collapse collapse" data-bs-parent="#accProd">
+                  <div class="accordion-body small">
+                    Componentes informados:<br>
+                    • MP = R$ 2,00/un • MOD = (5/60 × 25) = R$ 2,08/un • CIF = R$ 1,00/un.<br>
+                    <strong>Produção = MP + MOD + CIF = 2,00 + 2,08 + 1,00 = R$ 5,08/un.</strong>
+                    <hr class="my-2">
+                    <em>Breve nota:</em> representa o custo fabril direto por unidade — base para qualquer decisão de preço mínimo.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /Produção -->
+
+      <!-- Transporte -->
+      <div class="col-md-6 col-xl-3">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5>🚚 Custo de Transporte</h5>
+            <div class="kpi">R$ <span id="cTransp">0,70</span> <small class="text-muted fs-6">/un</small></div>
+            <div id="chart-transp" style="height:120px"></div>
+
+            <div class="accordion" id="accTransp">
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#transpDet">Fórmulas & cálculo</button>
+                </h2>
+                <div id="transpDet" class="accordion-collapse collapse" data-bs-parent="#accTransp">
+                  <div class="accordion-body small">
+                    Valor movimentado = Pedidos × Ticket = 13.000 × 15 = R$ 195.000/mês.<br>
+                    Taxa Uber (4%) = R$ 7.800/mês. Produção = 11.120 un/mês.<br>
+                    <strong>C_transp_un = 7.800 ÷ 11.120 = R$ 0,70/un.</strong>
+                    <hr class="my-2">
+                    <em>Breve nota:</em> captura o custo logístico variável por unidade vendida — útil para negociar taxas e escolher modais.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /Transporte -->
+
+      <!-- Armazenagem -->
+      <div class="col-md-6 col-xl-3">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5>🏷️ Custo de Armazenagem</h5>
+            <div class="kpi">R$ <span id="cArmaz">2,32</span> <small class="text-muted fs-6">/un</small></div>
+            <div id="chart-armaz" style="height:120px"></div>
+
+            <div class="accordion" id="accArmaz">
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#armazDet">Fórmulas & cálculo</button>
+                </h2>
+                <div id="armazDet" class="accordion-collapse collapse" data-bs-parent="#accArmaz">
+                  <div class="accordion-body small">
+                    Holding = 3% × Estoque médio = 3% × 528.320 = R$ 15.849,60/mês.<br>
+                    Carmaz_total = 10.000 + 15.849,60 = R$ 25.849,60/mês.<br>
+                    <strong>C_un = Carmaz_total ÷ Produção = 25.849,60 ÷ 11.120 = R$ 2,32/un.</strong>
+                    <hr class="my-2">
+                    <em>Breve nota:</em> revela impacto do capital imobilizado + estrutura — alvo para giro, redução de posições e políticas de estoque.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /Armazenagem -->
+
+      <!-- CTU -->
+      <div class="col-md-6 col-xl-3">
+        <div class="card h-100">
+          <div class="card-body">
+            <h5>🧮 Custo Total Entregue (CTU)</h5>
+            <div class="kpi">R$ <span id="cTotal">8,10</span> <small class="text-muted fs-6">/un</small></div>
+            <div id="chart-ctu" style="height:120px"></div>
+
+            <div class="accordion" id="accCTU">
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#ctuDet">Fórmulas & cálculo</button>
+                </h2>
+                <div id="ctuDet" class="accordion-collapse collapse" data-bs-parent="#accCTU">
+                  <div class="accordion-body small">
+                    Fórmula: CTU = Produção + Transporte + Armazenagem.<br>
+                    <strong>= 5,08 + 0,70 + 2,32 = R$ 8,10/un.</strong>
+                    <hr class="my-2">
+                    <em>Breve nota:</em> custo completo “posto cliente”; base para precificação, margem e PEQ.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /CTU -->
+    </div>
+
+    <!-- Indicadores -->
+    <div class="row g-4 mt-1">
+      <div class="col-md-6 col-xl-3">
+        <div class="card h-100"><div class="card-body">
+          <h5>💰 Preço de venda sugerido (30%)</h5>
+          <div class="kpi">R$ <span id="pv">11,57</span></div>
+          <div id="chart-preco" style="height:120px"></div>
+          <div class="small text-muted">PV = CTU ÷ (1 – 0,30). Ajuda a manter a margem-alvo em operações de e-commerce.</div>
+        </div></div>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <div class="card h-100"><div class="card-body">
+          <h5>➕ Margem de contribuição (un)</h5>
+          <div class="kpi">R$ <span id="mc">3,47</span></div>
+          <div id="chart-mc" style="height:120px"></div>
+          <div class="small text-muted">MC = PV – CTU. Financia custos fixos e lucro.</div>
+        </div></div>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <div class="card h-100"><div class="card-body">
+          <h5>⚖️ Ponto de Equilíbrio (un/mês)</h5>
+          <div class="kpi"><span id="peq">33.141</span> un</div>
+          <div id="chart-peq" style="height:120px"></div>
+          <div class="small text-muted">PEQ = CF ÷ MC/un | CF assumido: R$ 115.000/mês.</div>
+        </div></div>
+      </div>
+      <div class="col-md-6 col-xl-3">
+        <div class="card h-100"><div class="card-body">
+          <h5>💵 Receita mínima (PEQ)</h5>
+          <div class="kpi">R$ <span id="receita">383.441,37</span></div>
+          <div id="chart-receita" style="height:120px"></div>
+          <div class="small text-muted">Receita mínima = PEQ × PV. Meta de sustentabilidade mensal.</div>
+        </div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEÇÃO: KPIs (tabela) -->
+<section id="kpis" class="py-5 fade-section">
+  <div class="container">
+    <h2 class="fw-bold mb-3">📊 Consolidação de KPIs (ajustados)</h2>
+    <div class="card">
+      <div class="card-body table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead><tr>
+            <th>Indicador</th><th>Fórmula</th><th class="text-end">Resultado</th>
+          </tr></thead>
+          <tbody>
+            <tr><td>Custo de produção</td><td>—</td><td class="text-end">R$ 5,08/un</td></tr>
+            <tr><td>Custo de transporte</td><td>Taxa Uber ÷ Produção</td><td class="text-end">R$ 0,70/un</td></tr>
+            <tr><td>Custo de armazenagem</td><td>Carmaz_total ÷ Produção</td><td class="text-end">R$ 2,32/un</td></tr>
+            <tr class="highlight"><td><strong>CTU</strong></td><td>Soma dos custos</td><td class="text-end"><strong>R$ 8,10/un</strong></td></tr>
+            <tr><td>Preço sugerido</td><td>CTU ÷ (1 – 0,30)</td><td class="text-end">R$ 11,57/un</td></tr>
+            <tr><td>Margem de contribuição</td><td>PV – CTU</td><td class="text-end">R$ 3,47/un</td></tr>
+            <tr><td>Ponto de equilíbrio</td><td>CF ÷ MC/un</td><td class="text-end">33.141 un/mês</td></tr>
+            <tr><td>Receita mínima PEQ</td><td>PEQ × PV</td><td class="text-end">R$ 383.441,37 /mês</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEÇÃO: COMPARATIVO DE MERCADO -->
+<section id="mercado" class="py-5 fade-section">
+  <div class="container">
+    <div class="d-flex align-items-center mb-3">
+      <h2 class="fw-bold me-3">🛒 Comparativo de Custos por Produto (Mercado)</h2>
+      
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="d-md-flex align-items-center justify-content-between gap-3 mb-2">
+          <div class="fw-bold">Filtro rápido: 
+            <span class="chip">condicionador</span>
+            <span class="chip">sabonete</span>
+            <span class="chip">shampoo</span>
+          </div>
+          <input id="buscaMercado" class="form-control w-100 w-md-50" placeholder="Pesquisar SKU ou fonte..." />
+        </div>
+
+        <div class="table-responsive">
+          <table id="tabelaMercado" class="table table-striped table-hover align-middle">
+            <thead>
+              <tr>
+                <th>SKU</th>
+                <th class="text-end">C.Total Unit.</th>
+                <th class="text-end">P. Venda (30%)</th>
+                <th>Preço Médio de Mercado (fonte)</th>
+                <th class="text-end">Margem p/ atingir média</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Condicionador Aloe Vera</td>
+                <td class="text-end">R$ 10,02</td>
+                <td class="text-end">R$ 17,17</td>
+                <td>R$ 33,07 (Amazon)</td>
+                <td class="text-end">58,10%</td>
+              </tr>
+              <tr>
+                <td>Condicionador Óleo Argan</td>
+                <td class="text-end">R$ 11,02</td>
+                <td class="text-end">R$ 18,89</td>
+                <td>R$ 33,07 (Amazon)</td>
+                <td class="text-end">55,00%</td>
+              </tr>
+              <tr>
+                <td>Condicionador Rícino</td>
+                <td class="text-end">R$ 9,72</td>
+                <td class="text-end">R$ 16,65</td>
+                <td>R$ 33,07 (Amazon)</td>
+                <td class="text-end">—</td>
+              </tr>
+              <tr class="highlight">
+                <td>Sabonete Aloe Vera</td>
+                <td class="text-end">R$ 9,42</td>
+                <td class="text-end">R$ 16,14</td>
+                <td>R$ 15,13 (Lista Mercado Livre, Flora Pura Br)</td>
+                <td class="text-end">— <span class="text-success fw-bold">(já competitivo)</span></td>
+              </tr>
+              <tr>
+                <td>Sabonete Argila Verde</td>
+                <td class="text-end">R$ 9,12</td>
+                <td class="text-end">R$ 15,64</td>
+                <td>R$ 15,13 (Flora Pura Br)</td>
+                <td class="text-end">—</td>
+              </tr>
+              <tr>
+                <td>Sabonete Camomila</td>
+                <td class="text-end">R$ 9,42</td>
+                <td class="text-end">R$ 16,14</td>
+                <td>R$ 15,13 (Flora Pura Br)</td>
+                <td class="text-end">—</td>
+              </tr>
+              <tr class="highlight">
+                <td>Sabonete Rosa Mosqueta</td>
+                <td class="text-end">R$ 10,72</td>
+                <td class="text-end">R$ 18,37</td>
+                <td>R$ 15–25 (artesanal) — Flora Pura Br, Mercado Livre</td>
+                <td class="text-end"><span class="text-success fw-bold">já competitivo</span></td>
+              </tr>
+              <tr>
+                <td>Shampoo Aloe Vera</td>
+                <td class="text-end">R$ 9,72</td>
+                <td class="text-end">R$ 16,65</td>
+                <td>R$ 38,12 (Amazon, Mercado Livre)</td>
+                <td class="text-end">63,60%</td>
+              </tr>
+              <tr>
+                <td>Shampoo Óleo Argan</td>
+                <td class="text-end">R$ 10,72</td>
+                <td class="text-end">R$ 18,37</td>
+                <td>R$ 38,12 (Amazon, Minha Loja Eudora)</td>
+                <td class="text-end">60,20%</td>
+              </tr>
+              <tr>
+                <td>Shampoo Rícino</td>
+                <td class="text-end">R$ 9,42</td>
+                <td class="text-end">R$ 16,14</td>
+                <td>R$ 38,12 (Amazon, Mercado Livre)</td>
+                <td class="text-end">63,60%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div id="chart-mercado" style="height:320px"></div>
+      </div>
+    </div>
+
+    <!-- Análise breve -->
+    <div class="card">
+      <div class="card-body">
+        <h5 class="fw-bold mb-2">🔎 Leitura rápida (tópicos)</h5>
+        <ul class="mb-0">
+          <li><strong>Shampoos</strong> apresentam gap positivo: preço de mercado ~R$ 38,12, permitindo margens &gt;60% se posicionados corretamente.</li>
+          <li><strong>Sabonetes</strong> já competitivos vs. referência R$ 15,13 — foco em branding/combo para elevar ticket.</li>
+          <li><strong>Condicionadores</strong> têm espaço relevante (margens necessárias 55–58%) — sugerem reforço de valor percebido e kits com shampoo.</li>
+          <li>Priorizar canais com menor taxa e <em>bundling</em> (3–4 un.) para diluir frete unitário e maximizar contribuição.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SEÇÃO: PLANO DE AÇÃO -->
+<section id="acao" class="py-5 fade-section">
+  <div class="container">
+    <div class="d-flex align-items-center mb-3">
+      <h2 class="fw-bold me-3">🗂️ Plano de Ação — 5W2H</h2>
+      
+    </div>
+
+    <div class="card mb-3">
+      <div class="card-body">
+        <div class="row g-2 mb-2">
+          <div class="col-md-3">
+            <input id="filtroQuem" class="form-control" placeholder="Filtrar por Quem (ex.: Logística, Comercial)" />
+          </div>
+          <div class="col-md-3">
+            <input id="filtroOnde" class="form-control" placeholder="Filtrar por Where (ex.: Guarulhos, E-commerce)" />
+          </div>
+          <div class="col-md-3">
+            <select id="filtroPrazo" class="form-select">
+              <option value="">Prazo (todos)</option>
+              <option value="30">Até 30 dias</option>
+              <option value="60">Até 60 dias</option>
+              <option value="90">Até 90 dias</option>
+              <option value="120">Até 120 dias</option>
+            </select>
+          </div>
+          <div class="col-md-3 d-grid">
+            <button id="limparFiltros" class="btn btn-outline-brand">Limpar filtros</button>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table id="tabelaAcao" class="table table-striped table-hover align-middle">
+            <thead>
+              <tr>
+                <th>What</th><th>Why (W)</th><th>Where</th><th>When</th><th>Who</th><th>How?</th><th>How much (estim.)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1) Negociar tarifa/contrato com Uber Flash/transportadoras</td>
+                <td>Reduzir R$/pedido (maior driver)</td>
+                <td>Guarulhos</td>
+                <td data-dias="30">30 dias</td>
+                <td>Compras/Logística</td>
+                <td>Cotar 3 provedores; negociar volume</td>
+                <td><strong>Custo:</strong> R$0; <strong>Impacto:</strong> até R$ 3k/mês se reduzir R$/pedido</td>
+              </tr>
+              <tr>
+                <td>2) Testar bundling (pacotes 3–4 un.)</td>
+                <td>Reduzir custo transporte por un.</td>
+                <td>E-commerce</td>
+                <td data-dias="60">60 dias</td>
+                <td>Comercial/Operações</td>
+                <td>Oferta de kit com frete grátis acima de X</td>
+                <td>Investimento: R$0; ganho esperado: ↓C_transp/un</td>
+              </tr>
+              <tr>
+                <td>3) Reposicionar SKUs premium (Argan/Rosa Mosqueta) com marketing</td>
+                <td>Permitir margem maior (alvo ≥50%)</td>
+                <td>Online/PDV</td>
+                <td data-dias="90">90 dias</td>
+                <td>Marketing/Vendas</td>
+                <td>Criar embalagens premium, claims, reviews</td>
+                <td>Custo marketing R$ 5–10k; payback 3–6 meses</td>
+              </tr>
+              <tr>
+                <td>4) Otimizar giro de estoque (reduzir de 2 para 1,5 meses)</td>
+                <td>Diminuir holding cost</td>
+                <td>CD</td>
+                <td data-dias="60">60 dias</td>
+                <td>PCP/Produção</td>
+                <td>Ajuste de Lote Econômico e produção puxada</td>
+                <td>Custo: R$0–500; ganho ≈ R$4k/mês</td>
+              </tr>
+              <tr>
+                <td>5) Revisar canais e taxas (afastar % marketplace)</td>
+                <td>Reduzir 5% da taxa de cartão/marketplace</td>
+                <td>Comercial</td>
+                <td data-dias="45">45 dias</td>
+                <td>Comercial</td>
+                <td>Incentivo a pagamento via PIX/transferência</td>
+                <td>R$0; ganho estimado R$ 7k/mês</td>
+              </tr>
+              <tr>
+                <td>6) Avaliar rota de logística compartilhada</td>
+                <td>Substituir parte do Uber por motoboys fixos</td>
+                <td>Guarulhos</td>
+                <td data-dias="120">120 dias</td>
+                <td>Logística</td>
+                <td>Contrato piloto 3 meses</td>
+                <td>Capex R$ 3–10k; redução significativa C_transp</td>
+              </tr>
+              <tr>
+                <td>7) Diferenciar produtos (caixa, combo, selo natural)</td>
+                <td>Justificar preços médios a med/alta</td>
+                <td>Marketing</td>
+                <td data-dias="90">90 dias</td>
+                <td>Marketing/PDV</td>
+                <td>Rebranding leve + testes A/B</td>
+                <td>R$ 3–8k; aumento de ticket</td>
+              </tr>
+              <tr>
+                <td>8) Planilha dinâmica de precificação</td>
+                <td>Facilitar simulações (frete, MD, taxas)</td>
+                <td>Interno</td>
+                <td data-dias="7">7 dias</td>
+                <td>Comercial</td>
+                <td>Gerar CSV/Excel com fórmula</td>
+                <td> <center> - </center> </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Análise breve -->
+    <div class="card">
+      <div class="card-body">
+        <h5 class="fw-bold mb-2">🧭 Direcionadores (tópicos)</h5>
+        <ul class="mb-0">
+          <li><strong>Curto prazo (≤30–45 dias):</strong> renegociar frete e meios de pagamento → impacto imediato em CTU e MC.</li>
+          <li><strong>Médio prazo (60–90 dias):</strong> bundling + giro de estoque + reposicionamento premium → eleva ticket e reduz holding.</li>
+          <li><strong>Piloto logístico (120 dias):</strong> rota compartilhada para estabilizar custo por entrega em Guarulhos.</li>
+          <li><strong>Governança de preço:</strong> planilha dinâmica para simular PV por SKU com taxas e frete por canal.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="py-4 mt-4">
+  <div class="container text-center small">
+    🌿 <strong>Siene Cosmetics</strong> — Dashboard de Custos • Feito com Bootstrap 5, Google Charts e muito 💚
+  </div>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+/* =========================
+   Dados base (podem ser editados)
+========================= */
+const dados = {
+  cProd: 5.08,
+  cTransp: 0.70,
+  cArmaz: 2.32,
+  margem: 0.30,
+  cf: 115000,
+  producao: 11120,
+  pedidos: 13000,
+  ticket: 15
+};
+dados.ctu = +(dados.cProd + dados.cTransp + dados.cArmaz).toFixed(2);
+dados.pv  = +(dados.ctu / (1 - dados.margem)).toFixed(2);
+dados.mc  = +(dados.pv - dados.ctu).toFixed(2);
+dados.peq = Math.round(dados.cf / dados.mc);
+dados.receita = +(dados.peq * dados.pv).toFixed(2);
+
+// Preenche KPIs do topo (fallback se charts não carregarem)
+document.getElementById('kpi-ctu').textContent = dados.ctu.toFixed(2).replace('.',',');
+document.getElementById('kpi-pv').textContent  = dados.pv.toFixed(2).replace('.',',');
+['cProd','cTransp','cArmaz','cTotal','pv','mc'].forEach(id=>{
+  const val = (id==='cTotal'?dados.ctu:
+              id==='pv'?dados.pv:
+              id==='mc'?dados.mc:
+              dados[id]).toFixed(2).replace('.',',');
+  document.getElementById(id).textContent = val;
+});
+document.getElementById('peq').textContent = dados.peq.toLocaleString('pt-BR');
+document.getElementById('receita').textContent = dados.receita.toLocaleString('pt-BR',{minimumFractionDigits:2});
+
+// Google Charts
+google.charts.load('current', {'packages':['corechart','bar','gauge']});
+google.charts.setOnLoadCallback(drawCharts);
+
+function drawCharts(){
+  // Pie: composição do CTU (hero)
+  new google.visualization.PieChart(document.getElementById('chart-costs-pie'))
+    .draw(google.visualization.arrayToDataTable([
+      ['Componente','R$'],
+      ['Produção', dados.cProd],
+      ['Transporte', dados.cTransp],
+      ['Armazenagem', dados.cArmaz]
+    ]), { legend:{position:'bottom'}, pieHole:.45, slices:{}, backgroundColor:'transparent' });
+
+  // Mini colunas individuais
+  const miniOpt = {legend:'none', backgroundColor:'transparent', hAxis:{textPosition:'none'}, vAxis:{textPosition:'none'}, chartArea:{width:'85%',height:'70%'}};
+  new google.visualization.ColumnChart(document.getElementById('chart-prod'))
+    .draw(google.visualization.arrayToDataTable([['Item','R$'],['Produção', dados.cProd]]), miniOpt);
+  new google.visualization.ColumnChart(document.getElementById('chart-transp'))
+    .draw(google.visualization.arrayToDataTable([['Item','R$'],['Transporte', dados.cTransp]]), miniOpt);
+  new google.visualization.ColumnChart(document.getElementById('chart-armaz'))
+    .draw(google.visualization.arrayToDataTable([['Item','R$'],['Armazenagem', dados.cArmaz]]), miniOpt);
+  new google.visualization.ColumnChart(document.getElementById('chart-ctu'))
+    .draw(google.visualization.arrayToDataTable([['Item','R$'],['CTU', dados.ctu]]), miniOpt);
+
+  // PV vs CTU
+  new google.visualization.ColumnChart(document.getElementById('chart-preco'))
+    .draw(google.visualization.arrayToDataTable([['Indicador','R$',{role:'style'}],
+      ['PV', dados.pv, ''],
+      ['CTU', dados.ctu, '']
+    ]), {legend:'none', backgroundColor:'transparent', chartArea:{width:'85%',height:'70%'}});
+
+  // Margem contribuição
+  new google.visualization.ColumnChart(document.getElementById('chart-mc'))
+    .draw(google.visualization.arrayToDataTable([['Indicador','R$'],['MC (un)', dados.mc]]), miniOpt);
+
+  // Gauge PEQ (proxy): % de avanço sobre meta suposta (exibição lúdica)
+  const gauge = new google.visualization.Gauge(document.getElementById('chart-peq'));
+  gauge.draw(google.visualization.arrayToDataTable([['Label','Value'],['Meta', 60]]),
+   {min:0,max:100, redFrom:0, redTo:40, yellowFrom:40, yellowTo:70, greenFrom:70, greenTo:100, majorTicks:['0','100'], minorTicks:5});
+
+  // Receita mínima
+  new google.visualization.ColumnChart(document.getElementById('chart-receita'))
+    .draw(google.visualization.arrayToDataTable([['Indicador','R$'],['Receita PEQ', dados.receita]]),
+      {legend:'none', backgroundColor:'transparent', chartArea:{width:'85%',height:'70%'}});
+
+  // Mercado: gráfico PV x Mercado (exibe alguns SKUs)
+  const mercadoData = google.visualization.arrayToDataTable([
+    ['SKU','PV 30%','Mercado'],
+    ['Cond. Aloe', 17.17, 33.07],
+    ['Cond. Argan',18.89, 33.07],
+    ['Shampoo Aloe',16.65,38.12],
+    ['Shampoo Argan',18.37,38.12],
+    ['Sab. Aloe',16.14,15.13]
+  ]);
+  new google.charts.Bar(document.getElementById('chart-mercado'))
+    .draw(mercadoData, google.charts.Bar.convertOptions({legend:{position:'bottom'}, backgroundColor:'transparent', chartArea:{width:'75%',height:'70%'}}));
+}
+
+/* =========================
+   Fade-in ao rolar & fade ao trocar seção (links)
+========================= */
+const observer = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('show'); });
+},{threshold:.12});
+document.querySelectorAll('.fade-section').forEach(sec=>observer.observe(sec));
+
+document.querySelectorAll('.navbar .nav-link').forEach(link=>{
+  link.addEventListener('click', ()=>{
+    document.querySelectorAll('section').forEach(s=>s.classList.add('fade-hide'));
+    setTimeout(()=>document.querySelectorAll('section').forEach(s=>s.classList.remove('fade-hide')),350);
+  });
+});
+
+/* =========================
+   Filtros — Mercado
+========================= */
+const buscaMercado = document.getElementById('buscaMercado');
+const linhasMercado = [...document.querySelectorAll('#tabelaMercado tbody tr')];
+document.querySelectorAll('.chip').forEach(ch=>{
+  ch.style.cursor='pointer';
+  ch.addEventListener('click',()=>{
+    const termo = ch.textContent.toLowerCase();
+    buscaMercado.value = termo;
+    filtraMercado();
+  });
+});
+buscaMercado.addEventListener('input', filtraMercado);
+function filtraMercado(){
+  const q = buscaMercado.value.toLowerCase();
+  linhasMercado.forEach(tr=>{
+    tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+/* =========================
+   Filtros — Plano de Ação
+========================= */
+const filtroQuem  = document.getElementById('filtroQuem');
+const filtroOnde  = document.getElementById('filtroOnde');
+const filtroPrazo = document.getElementById('filtroPrazo');
+const linhasAcao  = [...document.querySelectorAll('#tabelaAcao tbody tr')];
+
+[filtroQuem, filtroOnde, filtroPrazo].forEach(el=>el.addEventListener('input', filtrarPlano));
+document.getElementById('limparFiltros').addEventListener('click', ()=>{
+  filtroQuem.value=''; filtroOnde.value=''; filtroPrazo.value=''; filtrarPlano();
+});
+
+function filtrarPlano(){
+  const qQuem = filtroQuem.value.toLowerCase();
+  const qOnde = filtroOnde.value.toLowerCase();
+  const prazo = +filtroPrazo.value || Infinity;
+
+  linhasAcao.forEach(tr=>{
+    const quem  = tr.children[4].textContent.toLowerCase();
+    const onde  = tr.children[2].textContent.toLowerCase();
+    const dias  = +(tr.children[3].getAttribute('data-dias')||9999);
+    const ok = (!qQuem || quem.includes(qQuem))
+            && (!qOnde || onde.includes(qOnde))
+            && (dias <= prazo);
+    tr.style.display = ok ? '' : 'none';
+  });
+}
+</script>
+</body>
+</html>
